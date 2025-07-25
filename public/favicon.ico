@@ -1,0 +1,29 @@
+<svg width="16" height="16" viewBox="0 0 38.104 38.104" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="f1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="f2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="f3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EC4899"/>
+      <stop offset="100%" style="stop-color:#DB2777"/>
+    </linearGradient>
+    <linearGradient id="f4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B"/>
+      <stop offset="100%" style="stop-color:#D97706"/>
+    </linearGradient>
+  </defs>
+  
+  <g>
+    <!-- Simplified version for favicon -->
+    <polygon points="19.052,2.552 15.877,8.052 22.227,8.052" fill="url(#f1)"/>
+    <polygon points="15.082,9.427 11.907,14.927 18.258,14.927" fill="url(#f2)"/>
+    <polygon points="26.197,14.927 23.021,9.427 19.846,14.927" fill="url(#f3)"/>
+    <polygon points="19.052,16.302 15.877,21.802 22.227,21.802" fill="url(#f4)"/>
+    <polygon points="19.052,30.052 15.877,35.552 22.227,35.552" fill="url(#f1)"/>
+  </g>
+</svg> 

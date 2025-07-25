@@ -91,7 +91,10 @@ const ChatPane: React.FC<ChatPaneProps> = ({
     <div className="h-full bg-slate-900 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-800 bg-slate-900/95 backdrop-blur">
-        <h1 className="text-xl font-bold text-white">DataChat AI</h1>
+        <div className="flex items-center gap-3">
+          <img src="/prism-logo.svg" alt="Prism" className="w-8 h-8" />
+          <h1 className="text-xl font-bold text-white">Prism</h1>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onClearChat}
