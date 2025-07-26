@@ -312,12 +312,15 @@ class MCPManager {
 
     try {
       const response = await serverInfo.client.listTools();
+      console.log(`🔍 Raw MCP listTools response from ${serverId}:`, JSON.stringify(response, null, 2));
       
       // Handle different response formats
       const tools = response.tools || response.result?.tools || [];
+      console.log(`🔍 Extracted tools array:`, JSON.stringify(tools, null, 2));
       
       // Store tools with server reference
       tools.forEach(tool => {
+        console.log(`🔍 Processing tool:`, JSON.stringify(tool, null, 2));
         this.tools.set(tool.name, {
           serverId,
           tool
@@ -336,21 +339,31 @@ class MCPManager {
   getOpenAITools() {
     const openaiTools = [];
     
+    // Parameter-less tools (safe to include)
+    const noParamTools = ['getUserInfo', 'getApplications', 'getClustersStatus', 'getIncidents'];
+    
     for (const [toolName, { tool }] of this.tools) {
-      openaiTools.push({
+      // Only include parameter-less tools for now
+      if (!noParamTools.includes(toolName)) continue;
+      
+      const openaiTool = {
         type: "function",
         function: {
           name: tool.name,
-          description: tool.description,
-          parameters: tool.inputSchema || {
+          description: tool.description || "No description available",
+          parameters: {
             type: "object",
             properties: {},
             required: []
           }
         }
-      });
+      };
+      
+      openaiTools.push(openaiTool);
+      console.log(`✅ Added parameter-less tool: ${tool.name}`);
     }
 
+    console.log(`🔧 Created ${openaiTools.length} parameter-less tools for OpenAI`);
     return openaiTools;
   }
 

@@ -128,6 +128,7 @@ app.post('/api/chat', async (req, res) => {
 
     // Add tools if available
     if (mcpTools.length > 0) {
+      console.log(`🔧 Sending ${mcpTools.length} MCP tools to Moonshot AI`);
       completionOptions.tools = mcpTools;
       completionOptions.tool_choice = 'auto';
     }
