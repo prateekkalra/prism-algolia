@@ -44,9 +44,11 @@ npm run dev
 ## Usage
 
 1. Open the application in your browser
-2. Drag and drop any file onto the upload area, or click to select files
-3. The AI will analyze the file and display results both in the UI and in the browser console
-4. Supported file types:
+2. **Left panel**: Drag and drop any file onto the upload area, or click to select files
+3. **Right panel**: Use the chat interface for additional questions
+4. **Resize panels**: Drag the center divider to adjust layout
+5. The AI will analyze files and display results both in the UI and in the browser console
+6. Supported file types:
    - **Videos**: MP4, AVI, MOV, etc.
    - **Audio**: MP3, WAV, AAC, etc.
    - **Documents**: PDF, TXT, MD, etc.
@@ -58,9 +60,12 @@ npm run dev
 
 - **Multi-format support**: Handles video, audio, text, PDF, images, and more
 - **AI-powered analysis**: Uses Google's Gemini AI for intelligent content analysis
+- **Dual-panel interface**: File analysis on left, chat on right
+- **Resizable layout**: Drag divider to adjust panel sizes
 - **Console output**: Detailed results printed to browser console
 - **Drag & drop interface**: Easy file upload with visual feedback
 - **Real-time processing**: See analysis results as they complete
+- **Chat interface**: Interactive AI chat for follow-up questions
 
 ## Troubleshooting
 

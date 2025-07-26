@@ -1,84 +1,119 @@
-# File Analysis Demo
+# File Analysis Demo - Split Panel UI
 
-This demonstrates exactly what happens when you upload different types of files.
+This demonstrates the AI file analyzer with the dual-panel interface.
 
-## What the Application Does
+## UI Layout
 
-1. **Upload any file** (drag & drop or click to select)
-2. **AI analyzes the content** using Gemini API  
-3. **Results display in UI** with file info and description
-4. **Console output** with detailed analysis
+**Left Panel**: AI File Analyzer
+- Drag & drop file upload area
+- Real-time analysis results
+- Console output logging
 
-## Console Output Example
+**Right Panel**: Chat Interface  
+- Interactive chat with AI
+- Export and clear functionality
+- Mock data analysis responses
 
-When you upload a file, you'll see output like this in the browser console:
+**Resizable Divider**: Drag to adjust panel sizes
+
+## What Happens When You Upload Files
+
+### 1. Upload Process
+1. **Drag & drop** any file into the left panel upload area
+2. **AI analyzes** using Gemini API in real-time
+3. **Results appear** in both the left panel and browser console
+4. **Chat on right** remains available for further questions
+
+### 2. Console Output Example
+
+Open browser dev tools (F12 → Console) to see detailed logs:
 
 ```
 === FILE ANALYSIS COMPLETE ===
-File: example-document.pdf
-Type: PDF
-Size: 2.3 MB
+File: example-video.mp4
+Type: Video
+Size: 15.2 MB
 Description:
-This PDF document appears to be a technical specification document for a software application. The document contains:
+This video file contains a presentation or demonstration sequence. Key observations:
 
-- **Document Type**: Technical specification
-- **Main Content**: API documentation and implementation guidelines
-- **Structure**: Well-organized with clear sections and subsections
-- **Key Information**: 
-  - REST API endpoints and methods
-  - Authentication requirements
-  - Request/response examples
-  - Error handling procedures
-- **Pages**: Approximately 15-20 pages
-- **Purpose**: Developer reference guide for API integration
+- **Content Type**: Educational/tutorial video
+- **Visual Elements**: Screen recording with interface elements
+- **Duration**: Approximately 3-5 minutes based on file size
+- **Quality**: High definition with clear visual elements
+- **Audio**: Likely contains narration or background audio
+- **Purpose**: Appears to be instructional content
 
-The document follows standard technical documentation formatting with code examples, parameter descriptions, and usage guidelines. It appears to be professionally authored and designed for software developers.
+The video shows a software interface with multiple windows and interactive elements, suggesting it's a tutorial or product demonstration. The pacing appears steady with clear transitions between scenes.
 ===============================
 ```
 
+### 3. Left Panel Results
+
+Results display in the left panel with:
+- **File info**: Name, type, size with appropriate icons
+- **Analysis summary**: Condensed description
+- **Error handling**: Graceful failure messages if analysis fails
+- **Scrollable history**: Previous analyses remain visible
+
 ## File Type Examples
 
-### Text Files (.txt, .md, .json, etc.)
-- Analyzes content themes, structure, word count
-- Identifies programming languages in code files
-- Summarizes key concepts and topics
+### Text Files (.txt, .md, .json, .js, .ts, etc.)
+- **Analysis focus**: Content themes, code structure, word count
+- **Special handling**: Programming language detection
+- **Console output**: Detailed content summary and key concepts
 
-### Images (.jpg, .png, .gif, etc.)
-- Describes visual content, objects, people, scenes
-- Identifies colors, composition, style
-- Reads any visible text in images
-- Analyzes mood and context
+### Images (.jpg, .png, .gif, .webp, etc.)
+- **Analysis focus**: Visual content, objects, text recognition
+- **Special handling**: Color analysis, composition assessment
+- **Console output**: Detailed scene description and mood analysis
 
-### Videos (.mp4, .avi, .mov, etc.)
-- Describes scenes and visual elements
-- Analyzes pacing and composition
-- Identifies key moments
-- Notes audio elements if detectable
+### Videos (.mp4, .avi, .mov, .webm, etc.)
+- **Analysis focus**: Scene content, visual elements, duration
+- **Special handling**: Frame analysis, audio detection
+- **Console output**: Comprehensive video breakdown
 
-### Audio (.mp3, .wav, .aac, etc.)
-- Identifies content type (music, speech, sounds)
-- Analyzes quality characteristics
-- Describes notable audio elements
-- Summarizes speech content if present
+### Audio (.mp3, .wav, .aac, .flac, etc.)
+- **Analysis focus**: Content type (music/speech), quality
+- **Special handling**: Speech transcription when possible
+- **Console output**: Audio characteristics and content summary
 
-### PDFs
-- Identifies document type and purpose
-- Analyzes structure and organization
-- Extracts key information and themes
-- Estimates page count when possible
+### Documents (.pdf, .docx, .xlsx, etc.)
+- **Analysis focus**: Document type, structure, key information
+- **Special handling**: Text extraction, page estimation
+- **Console output**: Document analysis and content themes
 
 ### Other Files
-- Makes intelligent guesses based on filename and type
-- Describes likely purpose and use cases
-- Explains file format characteristics
+- **Analysis focus**: File purpose based on extension and metadata
+- **Special handling**: Intelligent guessing based on file characteristics
+- **Console output**: File format explanation and use cases
+
+## Interactive Features
+
+### Left Panel Features
+- **Drag & drop upload**: Visual feedback during drag operations
+- **Loading states**: Spinner and progress indicators
+- **Clear results**: Trash button to clear all analysis history
+- **Scrollable results**: View multiple file analyses
+
+### Right Panel Features  
+- **Chat interface**: Ask questions about uploaded files
+- **Export chat**: Download conversation history
+- **Clear chat**: Reset conversation
+- **Mock responses**: Realistic AI-style responses for demonstration
+
+### Resizable Layout
+- **Drag divider**: Adjust panel sizes between 20%-60% split
+- **Smooth transitions**: Animated panel resizing
+- **Persistent sizes**: Panel sizes maintained during session
 
 ## Try It Now
 
-1. Make sure you have your Gemini API key in `.env`
-2. Upload different file types and watch both:
-   - **UI results** (formatted display)
-   - **Console output** (detailed logs)
+1. **Setup**: Ensure your Gemini API key is in `.env`
+2. **Upload**: Drag any file to the left panel
+3. **Watch**: See results in both UI and console (F12)
+4. **Chat**: Use right panel for additional questions
+5. **Resize**: Drag the center divider to adjust layout
 
-## Console Commands
+## Console Monitoring
 
-Open browser dev tools (F12) and watch the Console tab to see detailed analysis output for each file you upload. 
+Always keep browser dev tools open (F12 → Console) to see the complete analysis output for each uploaded file! 

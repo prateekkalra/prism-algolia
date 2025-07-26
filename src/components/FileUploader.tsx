@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Upload, FileText, Loader2 } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 import { fileAnalyzer, FileAnalysisResult } from '../services/fileAnalyzer';
 
 interface FileUploaderProps {
@@ -50,13 +50,13 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onAnalysisComplete }
   }, []);
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full">
       <div
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center transition-colors
+          border-2 border-dashed rounded-lg p-6 text-center transition-colors
           ${isDragOver 
-            ? 'border-blue-400 bg-blue-50' 
-            : 'border-gray-300 hover:border-gray-400'
+            ? 'border-blue-400 bg-blue-500/10' 
+            : 'border-gray-600 hover:border-gray-500'
           }
           ${isAnalyzing ? 'opacity-50 pointer-events-none' : ''}
         `}
@@ -74,19 +74,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onAnalysisComplete }
         />
         
         <label htmlFor="file-input" className="cursor-pointer">
-          <div className="space-y-4">
+          <div className="space-y-3">
             {isAnalyzing ? (
               <>
-                <Loader2 className="h-12 w-12 mx-auto text-blue-500 animate-spin" />
-                <p className="text-lg font-medium">Analyzing {currentFile}...</p>
-                <p className="text-sm text-gray-500">This may take a moment</p>
+                <Loader2 className="h-10 w-10 mx-auto text-blue-400 animate-spin" />
+                <p className="text-sm font-medium text-white">Analyzing {currentFile}...</p>
+                <p className="text-xs text-gray-400">This may take a moment</p>
               </>
             ) : (
               <>
-                <Upload className="h-12 w-12 mx-auto text-gray-400" />
+                <Upload className="h-10 w-10 mx-auto text-gray-400" />
                 <div>
-                  <p className="text-lg font-medium">Drop files here or click to upload</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm font-medium text-white">Drop files here or click to upload</p>
+                  <p className="text-xs text-gray-400">
                     Supports video, audio, text, PDF, images, and more
                   </p>
                 </div>
@@ -97,10 +97,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onAnalysisComplete }
       </div>
       
       {isAnalyzing && (
-        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+        <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
           <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-            <span className="text-sm text-blue-800">
+            <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
+            <span className="text-xs text-blue-300">
               Processing with Gemini AI...
             </span>
           </div>

@@ -9,34 +9,34 @@ interface AnalysisResultProps {
 const getFileIcon = (fileType: string) => {
   switch (fileType.toLowerCase()) {
     case 'text':
-      return <FileText className="h-6 w-6 text-blue-500" />;
+      return <FileText className="h-5 w-5 text-blue-400" />;
     case 'image':
-      return <Image className="h-6 w-6 text-green-500" />;
+      return <Image className="h-5 w-5 text-green-400" />;
     case 'video':
-      return <Video className="h-6 w-6 text-purple-500" />;
+      return <Video className="h-5 w-5 text-purple-400" />;
     case 'audio':
-      return <Music className="h-6 w-6 text-orange-500" />;
+      return <Music className="h-5 w-5 text-orange-400" />;
     case 'pdf':
-      return <FileText className="h-6 w-6 text-red-500" />;
+      return <FileText className="h-5 w-5 text-red-400" />;
     default:
-      return <FileX className="h-6 w-6 text-gray-500" />;
+      return <FileX className="h-5 w-5 text-gray-400" />;
   }
 };
 
 export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg border p-6 mb-6">
-      <div className="flex items-start gap-4 mb-4">
+    <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+      <div className="flex items-start gap-3 mb-3">
         {getFileIcon(result.fileType)}
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 break-all">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-medium text-white truncate" title={result.fileName}>
             {result.fileName}
           </h3>
-          <div className="flex gap-4 text-sm text-gray-500 mt-1">
-            <span className="bg-gray-100 px-2 py-1 rounded">
+          <div className="flex gap-2 text-xs text-gray-400 mt-1">
+            <span className="bg-gray-700 px-2 py-0.5 rounded">
               {result.fileType}
             </span>
-            <span className="bg-gray-100 px-2 py-1 rounded">
+            <span className="bg-gray-700 px-2 py-0.5 rounded">
               {result.fileSize}
             </span>
           </div>
@@ -44,17 +44,17 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
       </div>
 
       {result.error ? (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-red-800 mb-2">
-            <AlertCircle className="h-5 w-5" />
-            <span className="font-medium">Analysis Error</span>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-red-400 mb-2">
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-xs font-medium">Analysis Error</span>
           </div>
-          <p className="text-red-700">{result.error}</p>
+          <p className="text-red-300 text-xs">{result.error}</p>
         </div>
       ) : (
-        <div className="bg-gray-50 rounded-lg p-4">
-          <h4 className="font-medium text-gray-900 mb-3">Analysis Results:</h4>
-          <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
+        <div className="bg-gray-700/50 rounded-lg p-3">
+          <h4 className="text-xs font-medium text-gray-300 mb-2">Analysis:</h4>
+          <div className="text-xs text-gray-400 whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto">
             {result.description}
           </div>
         </div>
