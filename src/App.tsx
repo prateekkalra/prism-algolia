@@ -3,6 +3,7 @@ import { GripVertical } from 'lucide-react';
 import { ChatMessage } from './types/types';
 import { FileAnalysisPane } from './components/FileAnalysisPane';
 import ChatPane from './components/ChatPane';
+import Navbar from './components/Navbar';
 import { sendMessageToMoonshot, convertChatMessagesToMoonshotFormat } from './services/moonshot';
 import { LocalStorageService } from './services/localStorage';
 
@@ -11,7 +12,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [panelSizes, setPanelSizes] = useState({ left: 35, right: 65 });
   const [isDragging, setIsDragging] = useState(false);
-  const [testMode, setTestMode] = useState(false); // For testing source references
   
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef<number>(0);
@@ -100,14 +100,6 @@ function App() {
       // Detect if response should be linked to a source record
       let sourceRecordId = detectSourceReference(content, fullResponse);
       
-      // Test mode: force link to latest analysis if available
-      if (testMode && !sourceRecordId) {
-        const analyses = LocalStorageService.getAllAnalyses();
-        if (analyses.length > 0) {
-          sourceRecordId = analyses[0].id;
-          console.log('🧪 Test mode: Force-linking to latest analysis:', analyses[0].fileName);
-        }
-      }
 
       // Mark message as complete and add source reference if detected
       console.log('💬 Setting sourceRecordId for message:', aiMessageId, '- Source ID:', sourceRecordId);
@@ -139,16 +131,12 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [messages, detectSourceReference, testMode]);
+  }, [messages, detectSourceReference]);
 
   const handleClearChat = useCallback(() => {
     setMessages([]);
   }, []);
 
-  const handleTestModeToggle = useCallback(() => {
-    setTestMode(prev => !prev);
-    console.log('🧪 Test mode toggled:', !testMode);
-  }, [testMode]);
 
   const handleExportChat = useCallback(() => {
     const chatContent = messages.map(msg => 
@@ -205,9 +193,16 @@ function App() {
   return (
     <div 
       ref={containerRef}
-      className="h-screen bg-gray-900 text-white overflow-hidden select-none"
+      className="h-screen bg-gray-900 text-white overflow-hidden select-none flex flex-col"
     >
-      <div className="flex h-full">
+      {/* Top Navbar */}
+      <Navbar
+        onClearChat={handleClearChat}
+        onExportChat={handleExportChat}
+      />
+      
+      {/* Main Content */}
+      <div className="flex flex-1 h-full">
         {/* Left Panel - File Analysis Pane */}
         <div 
           className="flex-shrink-0 transition-all duration-200 ease-out"
@@ -238,11 +233,7 @@ function App() {
           <ChatPane
             messages={messages}
             onSendMessage={handleSendMessage}
-            onClearChat={handleClearChat}
-            onExportChat={handleExportChat}
             isLoading={isLoading}
-            testMode={testMode}
-            onTestModeToggle={handleTestModeToggle}
           />
         </div>
       </div>

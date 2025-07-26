@@ -340,7 +340,7 @@ class MCPManager {
     const openaiTools = [];
     
     // Parameter-less tools (safe to include)
-    const noParamTools = ['getUserInfo', 'getApplications', 'getClustersStatus', 'getIncidents'];
+    const noParamTools = ['getUserInfo', 'getApplications', 'searchSingleIndex', 'saveObject'];
     
     for (const [toolName, { tool }] of this.tools) {
       let openaiTool = null;

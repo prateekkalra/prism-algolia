@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Square, RotateCcw, Download, MessageSquare, BarChart3, FileSearch, TrendingUp } from 'lucide-react';
+import { Send, Square, MessageSquare, BarChart3, FileSearch, TrendingUp } from 'lucide-react';
 import { ChatMessage, ExamplePrompt, StoredAnalysis } from '../types/types';
 import MessageBubble from './MessageBubble';
 import MCPStatusPanel from './MCPStatusPanel';
@@ -9,21 +9,13 @@ import { LocalStorageService } from '../services/localStorage';
 interface ChatPaneProps {
   messages: ChatMessage[];
   onSendMessage: (message: string) => void;
-  onClearChat: () => void;
-  onExportChat: () => void;
   isLoading: boolean;
-  testMode?: boolean;
-  onTestModeToggle?: () => void;
 }
 
 const ChatPane: React.FC<ChatPaneProps> = ({
   messages,
   onSendMessage,
-  onClearChat,
-  onExportChat,
-  isLoading,
-  testMode = false,
-  onTestModeToggle
+  isLoading
 }) => {
   const [input, setInput] = useState('');
   const [selectedAnalysis, setSelectedAnalysis] = useState<StoredAnalysis | null>(null);
@@ -103,49 +95,9 @@ const ChatPane: React.FC<ChatPaneProps> = ({
 
   return (
     <div className="h-full bg-slate-900 flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-800 bg-slate-900/95 backdrop-blur">
-        <div className="flex items-center gap-3">
-          <img src="/prism-logo.svg" alt="Prism" className="w-8 h-8" />
-          <div>
-            <h1 className="text-xl font-bold text-white">Prism</h1>
-            <p className="text-xs text-gray-400">AI-Powered Data Analysis Platform</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <MCPStatusPanel />
-          {onTestModeToggle && (
-            <button
-              onClick={onTestModeToggle}
-              className={`p-2 rounded-lg transition-colors duration-200 text-xs font-mono ${
-                testMode 
-                  ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
-                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-              }`}
-              title={testMode ? "Test Mode: ON (Force-link sources)" : "Test Mode: OFF"}
-            >
-              TEST
-            </button>
-          )}
-          <button
-            onClick={onClearChat}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors duration-200"
-            title="Clear Chat"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            onClick={onExportChat}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors duration-200"
-            title="Export Conversation"
-          >
-            <Download className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 scrollbar-custom">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center max-w-2xl mx-auto">
             <div className="mb-8">

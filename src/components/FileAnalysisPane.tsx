@@ -5,7 +5,7 @@ import { AnalysisDetailDialog } from './AnalysisDetailDialog';
 import { FileAnalysisResult } from '../services/fileAnalyzer';
 import { StoredAnalysis } from '../types/types';
 import { LocalStorageService } from '../services/localStorage';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Upload } from 'lucide-react';
 
 export const FileAnalysisPane: React.FC = () => {
   const [storedAnalyses, setStoredAnalyses] = useState<StoredAnalysis[]>([]);
@@ -51,47 +51,41 @@ export const FileAnalysisPane: React.FC = () => {
 
   return (
     <div className="h-full bg-gray-900 text-white overflow-hidden flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/prism-logo.svg" alt="Prism" className="w-6 h-6" />
-            <div>
-              <h2 className="text-lg font-semibold">Smart Analytics</h2>
-              <p className="text-xs text-gray-400">Intelligent File Insights</p>
-            </div>
-          </div>
-          
-          {storedAnalyses.length > 0 && (
-            <button
-              onClick={clearResults}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-              title="Clear all results"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          )}
+      {/* Upload Section */}
+      <div className="p-6">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-white mb-2">Upload Sources</h2>
+          <p className="text-sm text-gray-400">
+            Add files to your knowledge base, then chat about them
+          </p>
         </div>
-      </div>
-
-      {/* File Uploader */}
-      <div className="p-4 border-b border-gray-700">
         <FileUploader onAnalysisComplete={handleAnalysisComplete} />
       </div>
 
-      {/* Results Section */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4">
+
+      {/* Sources Section */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto px-6 pb-6 scrollbar-custom">
           {storedAnalyses.length > 0 ? (
             <>
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-300 mb-2">
-                  Insights Library ({storedAnalyses.length})
-                </h3>
-                <p className="text-xs text-gray-500">
-                  Click any item to explore detailed insights
-                </p>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-200 mb-1">
+                    Knowledge Base
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    {storedAnalyses.length} source{storedAnalyses.length !== 1 ? 's' : ''} • Click to view details
+                  </p>
+                </div>
+                <button
+                  onClick={clearResults}
+                  className="p-2 text-gray-500 hover:text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+                  title="Clear all sources"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
+              
               <div className="space-y-3">
                 {storedAnalyses.map((analysis) => (
                   <AnalysisSummary
@@ -104,12 +98,21 @@ export const FileAnalysisPane: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="text-center py-8">
-              <img src="/prism-logo.svg" alt="Prism" className="w-12 h-12 mx-auto opacity-60 mb-4" />
-              <p className="text-gray-400 text-sm mb-2">Ready to unlock insights</p>
-              <p className="text-gray-500 text-xs">
-                Drop any file above to discover patterns, extract data, and generate intelligent summaries
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Upload className="w-8 h-8 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-300 mb-2">
+                No sources yet
+              </h3>
+              <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">
+                Upload documents, images, spreadsheets, or any file type to start analyzing with AI
               </p>
+              <div className="inline-flex items-center gap-2 text-xs text-gray-600 bg-gray-800/50 px-3 py-2 rounded-full">
+                <span className="w-2 h-2 bg-gray-600 rounded-full"></span>
+                <span>Then ask questions in the chat</span>
+                <span className="w-2 h-2 bg-gray-600 rounded-full"></span>
+              </div>
             </div>
           )}
         </div>
@@ -123,4 +126,4 @@ export const FileAnalysisPane: React.FC = () => {
       />
     </div>
   );
-}; 
+};
