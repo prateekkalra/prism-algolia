@@ -25,17 +25,17 @@ const ChatPane: React.FC<ChatPaneProps> = ({
   const examplePrompts: ExamplePrompt[] = [
     {
       id: '1',
-      text: 'Summarize the main points from quarterly-report.pdf',
+      text: 'Help me analyze data from my uploaded files',
       icon: 'FileSearch'
     },
     {
       id: '2',
-      text: 'What is the total revenue in sales-data.csv?',
+      text: 'What are the key insights from my dataset?',
       icon: 'BarChart3'
     },
     {
       id: '3',
-      text: 'Compare the findings in report-A.docx and report-B.docx',
+      text: 'Generate a summary report with recommendations',
       icon: 'TrendingUp'
     }
   ];
@@ -93,7 +93,10 @@ const ChatPane: React.FC<ChatPaneProps> = ({
       <div className="flex items-center justify-between p-4 border-b border-gray-800 bg-slate-900/95 backdrop-blur">
         <div className="flex items-center gap-3">
           <img src="/prism-logo.svg" alt="Prism" className="w-8 h-8" />
-          <h1 className="text-xl font-bold text-white">Prism</h1>
+          <div>
+            <h1 className="text-xl font-bold text-white">Prism</h1>
+            <p className="text-xs text-gray-400">Powered by Moonshot AI</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -121,8 +124,8 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
                 <MessageSquare className="w-8 h-8 text-blue-400" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Ask anything about your data</h2>
-              <p className="text-gray-400 text-lg">Upload your files and start asking questions to get insights</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Chat with Moonshot AI</h2>
+              <p className="text-gray-400 text-lg">Ask questions, get insights, or request analysis of your data</p>
             </div>
 
             <div className="grid gap-3 w-full max-w-lg">
@@ -161,7 +164,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a follow-up, or start a new query... (use / for commands)"
+              placeholder="Message Moonshot AI... (Shift+Enter for new line)"
               className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 resize-none outline-none min-h-[20px] max-h-[120px] py-2 px-2 font-mono text-sm leading-relaxed"
               rows={1}
             />

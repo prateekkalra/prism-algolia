@@ -3,6 +3,7 @@ import { GripVertical } from 'lucide-react';
 import { ChatMessage } from './types/types';
 import { FileAnalysisPane } from './components/FileAnalysisPane';
 import ChatPane from './components/ChatPane';
+import { sendMessageToMoonshot, convertChatMessagesToMoonshotFormat } from './services/moonshot';
 
 function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -19,116 +20,69 @@ function App() {
       id: Math.random().toString(36).substr(2, 9),
       type: 'user',
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      isComplete: true
     };
 
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage: ChatMessage = {
-        id: Math.random().toString(36).substr(2, 9),
-        type: 'ai',
-        content: generateMockResponse(content),
-        timestamp: new Date()
-      };
+    // Create AI message for streaming
+    const aiMessageId = Math.random().toString(36).substr(2, 9);
+    const aiMessage: ChatMessage = {
+      id: aiMessageId,
+      type: 'ai',
+      content: '',
+      timestamp: new Date(),
+      isStreaming: true,
+      isComplete: false
+    };
 
-      setMessages(prev => [...prev, aiMessage]);
+    setMessages(prev => [...prev, aiMessage]);
+
+    try {
+      // Convert messages to Moonshot format (excluding the current streaming message)
+      const conversationHistory = [...messages, userMessage];
+      const moonshotMessages = convertChatMessagesToMoonshotFormat(conversationHistory);
+
+      // Send to Moonshot with streaming
+      await sendMessageToMoonshot(
+        moonshotMessages,
+        (chunk: string) => {
+          // Update the streaming message with new chunk
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessageId 
+              ? { ...msg, content: msg.content + chunk }
+              : msg
+          ));
+        }
+      );
+
+      // Mark message as complete
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessageId 
+          ? { ...msg, isStreaming: false, isComplete: true }
+          : msg
+      ));
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Update with error message
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessageId 
+          ? { 
+              ...msg, 
+              content: 'Sorry, I encountered an error while processing your request. Please make sure you have set up your Moonshot API key in the environment variables.',
+              isStreaming: false,
+              isComplete: true
+            }
+          : msg
+      ));
+    } finally {
       setIsLoading(false);
-    }, 1500 + Math.random() * 2000);
-  }, []);
-
-  const generateMockResponse = (query: string): string => {
-    const responses = [
-      `Based on your data analysis request, I can see you're looking for insights about "${query}". Here's what I found:
-
-**Key Findings:**
-- Data shows significant patterns in the uploaded files
-- **Revenue Growth**: 15.3% increase quarter-over-quarter
-- **Customer Retention**: 87% retention rate
-
-\`\`\`sql
-SELECT 
-  quarter,
-  SUM(revenue) as total_revenue,
-  COUNT(DISTINCT customer_id) as unique_customers
-FROM sales_data 
-GROUP BY quarter
-ORDER BY quarter DESC;
-\`\`\`
-
-Here's a summary table of the key metrics:
-
-| Metric | Q1 2024 | Q2 2024 | Q3 2024 | Change |
-|--------|---------|---------|---------|--------|
-| Revenue | $125,000 | $144,000 | $166,000 | +15.3% |
-| Customers | 1,250 | 1,380 | 1,455 | +5.4% |
-| Avg Order | $100 | $104 | $114 | +9.6% |
-
-*This analysis is based on the uploaded CSV data and processed through our AI models.*`,
-
-      `I've analyzed your request about "${query}" and here are the insights:
-
-The data reveals several interesting patterns. Let me break this down for you:
-
-1. **Data Quality Assessment**: Your uploaded files show good data integrity
-2. **Trend Analysis**: There's a clear upward trend in key performance indicators
-3. **Recommendations**: Consider focusing on the top-performing segments
-
-\`\`\`python
-import pandas as pd
-import numpy as np
-
-# Sample analysis code
-df = pd.read_csv('your_data.csv')
-summary_stats = df.describe()
-correlation_matrix = df.corr()
-
-print("Summary Statistics:")
-print(summary_stats)
-\`\`\`
-
-**Action Items:**
-- Review the highlighted data points
-- Consider implementing the suggested optimizations
-- Monitor these metrics regularly
-
-Would you like me to dive deeper into any specific aspect of this analysis?`,
-
-      `Great question about "${query}"! I've processed your uploaded data and here's what stands out:
-
-**Executive Summary:**
-Your data contains valuable insights that can drive strategic decisions. The analysis shows consistent growth patterns with some areas for optimization.
-
-**Detailed Breakdown:**
-
-*Performance Metrics:*
-- Overall performance: **Excellent** ✅
-- Data completeness: **98.5%**
-- Processing time: **2.3 seconds**
-
-\`\`\`json
-{
-  "analysis_results": {
-    "total_records": 15420,
-    "data_quality_score": 9.2,
-    "key_insights": [
-      "Strong seasonal trends identified",
-      "Customer segmentation opportunities",
-      "Revenue optimization potential"
-    ]
-  }
-}
-\`\`\`
-
-The most important finding is that your data shows a **strong correlation** between customer engagement and revenue growth. This suggests that focusing on customer experience initiatives could yield significant returns.
-
-*Next steps: Would you like me to create a detailed report or explore specific data segments?*`
-    ];
-
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
+    }
+  }, [messages]);
 
   const handleClearChat = useCallback(() => {
     setMessages([]);

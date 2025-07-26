@@ -13,6 +13,7 @@ export interface ChatMessage {
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
+  isComplete?: boolean;
 }
 
 export interface ExamplePrompt {
