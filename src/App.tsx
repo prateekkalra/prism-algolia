@@ -196,13 +196,15 @@ function App() {
       className="h-screen bg-gray-900 text-white overflow-hidden select-none flex flex-col"
     >
       {/* Top Navbar */}
-      <Navbar
-        onClearChat={handleClearChat}
-        onExportChat={handleExportChat}
-      />
+      <div className="sticky top-0 z-50">
+        <Navbar
+          onClearChat={handleClearChat}
+          onExportChat={handleExportChat}
+        />
+      </div>
       
       {/* Main Content */}
-      <div className="flex flex-1 h-full">
+      <div className="flex flex-1 min-h-0">
         {/* Left Panel - File Analysis Pane */}
         <div 
           className="flex-shrink-0 transition-all duration-200 ease-out"
