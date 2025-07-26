@@ -1,12 +1,15 @@
 import React from 'react';
 import { User, Bot } from 'lucide-react';
-import { ChatMessage } from '../types/types';
+import { ChatMessage, StoredAnalysis } from '../types/types';
+import MessageSourceReference from './MessageSourceReference';
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  sourceAnalysis?: StoredAnalysis;
+  onViewSourceDetails?: (analysis: StoredAnalysis) => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, sourceAnalysis, onViewSourceDetails }) => {
   const isUser = message.type === 'user';
   
   const formatContent = (content: string) => {
@@ -28,6 +31,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       )}
       
       <div className={`max-w-[80%] ${isUser ? 'order-first' : ''}`}>
+        {/* Source Reference - only show for AI messages with source */}
+        {!isUser && sourceAnalysis && onViewSourceDetails && (
+          <>
+            {console.log('🎯 Rendering MessageSourceReference for:', sourceAnalysis.fileName)}
+            <MessageSourceReference
+              analysis={sourceAnalysis}
+              onClick={() => onViewSourceDetails(sourceAnalysis)}
+            />
+          </>
+        )}
+        {!isUser && !sourceAnalysis && console.log('❌ No source analysis for AI message')}
         <div
           className={`rounded-2xl px-4 py-3 ${
             isUser

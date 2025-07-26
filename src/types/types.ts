@@ -14,6 +14,7 @@ export interface ChatMessage {
   timestamp: Date;
   isStreaming?: boolean;
   isComplete?: boolean;
+  sourceRecordId?: string;
 }
 
 export interface ExamplePrompt {

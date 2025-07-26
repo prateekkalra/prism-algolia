@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Square, RotateCcw, Download, MessageSquare, BarChart3, FileSearch, TrendingUp } from 'lucide-react';
-import { ChatMessage, ExamplePrompt } from '../types/types';
+import { ChatMessage, ExamplePrompt, StoredAnalysis } from '../types/types';
 import MessageBubble from './MessageBubble';
 import MCPStatusPanel from './MCPStatusPanel';
+import { AnalysisDetailDialog } from './AnalysisDetailDialog';
+import { LocalStorageService } from '../services/localStorage';
 
 interface ChatPaneProps {
   messages: ChatMessage[];
@@ -10,6 +12,8 @@ interface ChatPaneProps {
   onClearChat: () => void;
   onExportChat: () => void;
   isLoading: boolean;
+  testMode?: boolean;
+  onTestModeToggle?: () => void;
 }
 
 const ChatPane: React.FC<ChatPaneProps> = ({
@@ -17,9 +21,13 @@ const ChatPane: React.FC<ChatPaneProps> = ({
   onSendMessage,
   onClearChat,
   onExportChat,
-  isLoading
+  isLoading,
+  testMode = false,
+  onTestModeToggle
 }) => {
   const [input, setInput] = useState('');
+  const [selectedAnalysis, setSelectedAnalysis] = useState<StoredAnalysis | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +72,11 @@ const ChatPane: React.FC<ChatPaneProps> = ({
     onSendMessage(prompt);
   };
 
+  const handleViewSourceDetails = (analysis: StoredAnalysis) => {
+    setSelectedAnalysis(analysis);
+    setIsDialogOpen(true);
+  };
+
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -101,6 +114,19 @@ const ChatPane: React.FC<ChatPaneProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <MCPStatusPanel />
+          {onTestModeToggle && (
+            <button
+              onClick={onTestModeToggle}
+              className={`p-2 rounded-lg transition-colors duration-200 text-xs font-mono ${
+                testMode 
+                  ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+              }`}
+              title={testMode ? "Test Mode: ON (Force-link sources)" : "Test Mode: OFF"}
+            >
+              TEST
+            </button>
+          )}
           <button
             onClick={onClearChat}
             className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors duration-200"
@@ -149,9 +175,31 @@ const ChatPane: React.FC<ChatPaneProps> = ({
           </div>
         ) : (
           <div className="max-w-4xl mx-auto">
-            {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
-            ))}
+            {messages.map((message) => {
+              // Get source analysis if message has a source record ID
+              const sourceAnalysis = message.sourceRecordId 
+                ? LocalStorageService.getAnalysisById(message.sourceRecordId)
+                : undefined;
+              
+              // Debug logging for each message
+              console.log('📨 Message Debug:', {
+                id: message.id,
+                type: message.type,
+                hasSourceId: !!message.sourceRecordId,
+                sourceId: message.sourceRecordId,
+                foundAnalysis: !!sourceAnalysis,
+                analysisFile: sourceAnalysis?.fileName
+              });
+              
+              return (
+                <MessageBubble 
+                  key={message.id} 
+                  message={message}
+                  sourceAnalysis={sourceAnalysis}
+                  onViewSourceDetails={handleViewSourceDetails}
+                />
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
         )}
@@ -188,6 +236,13 @@ const ChatPane: React.FC<ChatPaneProps> = ({
           </div>
         </form>
       </div>
+
+      {/* Analysis Detail Dialog */}
+      <AnalysisDetailDialog
+        analysis={selectedAnalysis}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
     </div>
   );
 };

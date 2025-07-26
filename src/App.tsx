@@ -4,16 +4,55 @@ import { ChatMessage } from './types/types';
 import { FileAnalysisPane } from './components/FileAnalysisPane';
 import ChatPane from './components/ChatPane';
 import { sendMessageToMoonshot, convertChatMessagesToMoonshotFormat } from './services/moonshot';
+import { LocalStorageService } from './services/localStorage';
 
 function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [panelSizes, setPanelSizes] = useState({ left: 35, right: 65 });
   const [isDragging, setIsDragging] = useState(false);
+  const [testMode, setTestMode] = useState(false); // For testing source references
   
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef<number>(0);
   const initialSizes = useRef({ left: 35, right: 65 });
+
+  // Helper function to detect if message might reference file data
+  const detectSourceReference = useCallback((userMessage: string, aiResponse: string) => {
+    const analyses = LocalStorageService.getAllAnalyses();
+    console.log('🔍 Source Detection Debug:');
+    console.log('- Available analyses:', analyses.length);
+    console.log('- User message:', userMessage);
+    console.log('- AI response preview:', aiResponse.substring(0, 100) + '...');
+    
+    if (analyses.length === 0) {
+      console.log('❌ No analyses available');
+      return undefined;
+    }
+
+    // Expanded keyword list for better detection
+    const fileKeywords = [
+      'file', 'document', 'data', 'analyze', 'content', 'pdf', 'text', 'upload', 'uploaded',
+      'csv', 'json', 'excel', 'word', 'docx', 'txt', 'image', 'video', 'audio',
+      'analysis', 'report', 'summary', 'information', 'details', 'what', 'tell me about'
+    ];
+    
+    const hasFileReference = fileKeywords.some(keyword => 
+      userMessage.toLowerCase().includes(keyword) || 
+      aiResponse.toLowerCase().includes(keyword)
+    );
+    
+    console.log('- Has file reference:', hasFileReference);
+    
+    if (hasFileReference && analyses.length > 0) {
+      const sourceId = analyses[0].id;
+      console.log('✅ Linking to source:', sourceId, '- File:', analyses[0].fileName);
+      return sourceId;
+    }
+    
+    console.log('❌ No source link created');
+    return undefined;
+  }, []);
 
   const handleSendMessage = useCallback(async (content: string) => {
     const userMessage: ChatMessage = {
@@ -46,7 +85,7 @@ function App() {
       const moonshotMessages = convertChatMessagesToMoonshotFormat(conversationHistory);
 
       // Send to Moonshot with streaming
-      await sendMessageToMoonshot(
+      const fullResponse = await sendMessageToMoonshot(
         moonshotMessages,
         (chunk: string) => {
           // Update the streaming message with new chunk
@@ -58,10 +97,28 @@ function App() {
         }
       );
 
-      // Mark message as complete
+      // Detect if response should be linked to a source record
+      let sourceRecordId = detectSourceReference(content, fullResponse);
+      
+      // Test mode: force link to latest analysis if available
+      if (testMode && !sourceRecordId) {
+        const analyses = LocalStorageService.getAllAnalyses();
+        if (analyses.length > 0) {
+          sourceRecordId = analyses[0].id;
+          console.log('🧪 Test mode: Force-linking to latest analysis:', analyses[0].fileName);
+        }
+      }
+
+      // Mark message as complete and add source reference if detected
+      console.log('💬 Setting sourceRecordId for message:', aiMessageId, '- Source ID:', sourceRecordId);
       setMessages(prev => prev.map(msg => 
         msg.id === aiMessageId 
-          ? { ...msg, isStreaming: false, isComplete: true }
+          ? { 
+              ...msg, 
+              isStreaming: false, 
+              isComplete: true,
+              sourceRecordId: sourceRecordId
+            }
           : msg
       ));
 
@@ -82,11 +139,16 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [messages]);
+  }, [messages, detectSourceReference, testMode]);
 
   const handleClearChat = useCallback(() => {
     setMessages([]);
   }, []);
+
+  const handleTestModeToggle = useCallback(() => {
+    setTestMode(prev => !prev);
+    console.log('🧪 Test mode toggled:', !testMode);
+  }, [testMode]);
 
   const handleExportChat = useCallback(() => {
     const chatContent = messages.map(msg => 
@@ -179,6 +241,8 @@ function App() {
             onClearChat={handleClearChat}
             onExportChat={handleExportChat}
             isLoading={isLoading}
+            testMode={testMode}
+            onTestModeToggle={handleTestModeToggle}
           />
         </div>
       </div>
