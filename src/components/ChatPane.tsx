@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Square, RotateCcw, Download, MessageSquare, BarChart3, FileSearch, TrendingUp } from 'lucide-react';
 import { ChatMessage, ExamplePrompt } from '../types/types';
 import MessageBubble from './MessageBubble';
+import MCPStatusPanel from './MCPStatusPanel';
 
 interface ChatPaneProps {
   messages: ChatMessage[];
@@ -25,17 +26,17 @@ const ChatPane: React.FC<ChatPaneProps> = ({
   const examplePrompts: ExamplePrompt[] = [
     {
       id: '1',
-      text: 'Help me analyze data from my uploaded files',
+      text: 'What tools do you have available?',
       icon: 'FileSearch'
     },
     {
       id: '2',
-      text: 'What are the key insights from my dataset?',
+      text: 'Calculate 15 * 8 for me',
       icon: 'BarChart3'
     },
     {
       id: '3',
-      text: 'Generate a summary report with recommendations',
+      text: 'What time is it right now?',
       icon: 'TrendingUp'
     }
   ];
@@ -95,10 +96,11 @@ const ChatPane: React.FC<ChatPaneProps> = ({
           <img src="/prism-logo.svg" alt="Prism" className="w-8 h-8" />
           <div>
             <h1 className="text-xl font-bold text-white">Prism</h1>
-            <p className="text-xs text-gray-400">Powered by Moonshot AI</p>
+            <p className="text-xs text-gray-400">Powered by Moonshot AI + MCP</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <MCPStatusPanel />
           <button
             onClick={onClearChat}
             className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors duration-200"
@@ -124,8 +126,8 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
                 <MessageSquare className="w-8 h-8 text-blue-400" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Chat with Moonshot AI</h2>
-              <p className="text-gray-400 text-lg">Ask questions, get insights, or request analysis of your data</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Chat with Moonshot AI + MCP</h2>
+              <p className="text-gray-400 text-lg">Ask questions, use tools, or request analysis of your data</p>
             </div>
 
             <div className="grid gap-3 w-full max-w-lg">
@@ -164,7 +166,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Message Moonshot AI... (Shift+Enter for new line)"
+              placeholder="Message Moonshot AI with MCP tools... (Shift+Enter for new line)"
               className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 resize-none outline-none min-h-[20px] max-h-[120px] py-2 px-2 font-mono text-sm leading-relaxed"
               rows={1}
             />
