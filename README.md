@@ -1,55 +1,51 @@
 # Prism
 
-**AI-Powered Knowledge Companion with Algolia Integration**
+**AI-Powered Personal Knowledge Companion**
 
-Prism is an intelligent data analysis platform that transforms how you interact with your files and data. Upload any type of file (documents, images, videos, audio, spreadsheets) and let our AI assistant analyze them using Google's Gemini 2.5 Pro model. The analyzed data is automatically saved to Algolia using the **Algolia MCP (Model Context Protocol)** integration, creating a searchable knowledge base that powers contextual conversations.
+Prism is an intelligent personal knowledge platform that revolutionizes how you organize, search, and interact with your content. Upload any type of file (documents, images, videos, audio) and chat with your data using AI. Our system analyzes your files with Google's Gemini 2.5 Pro and automatically creates a searchable personal knowledge base using **Algolia MCP (Model Context Protocol)** integration, enabling natural language conversations about your content.
 
-![Prism Demo](https://img.shields.io/badge/status-active-brightgreen) ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## 🌟 Key Features
 
-### 📄 Universal File Analysis
-- **Multi-format Support**: Text, PDF, images, videos, audio, spreadsheets, and more
-- **AI-Powered Insights**: Comprehensive analysis using Google Gemini 2.5 Pro
-- **Automatic Processing**: Drag-and-drop or click to upload with instant AI analysis
+### 📄 Universal Personal File Analysis
+- **Multi-format Support**: Analyze your text files, PDFs, images, videos, audio, and more
+- **AI-Powered Insights**: Comprehensive analysis of your content using Google Gemini 2.5 Pro
+- **Instant Processing**: Drag-and-drop your files for immediate AI analysis
 
-### 🔍 Algolia-Powered Search & Knowledge Base
-- **Automatic Indexing**: All file analyses are saved to Algolia using MCP integration
-- **Contextual Search**: AI queries automatically search your knowledge base
-- **Smart Retrieval**: Relevant data is retrieved and used to enhance AI responses
+### 🔍 Personal Knowledge Base with Algolia Search
+- **Automatic Indexing**: All your file analyses are saved to your personal Algolia index
+- **Contextual Search**: Ask questions and AI automatically searches your knowledge base
+- **Smart Retrieval**: Your relevant content is retrieved and used to enhance AI responses
 
 ### 💬 Intelligent Chat Interface
-- **Moonshot v1 AI**: Advanced conversational AI with tool-calling capabilities
-- **Streaming Responses**: Real-time response generation with live tool execution
-- **Source Linking**: AI responses automatically reference uploaded files
+- **Moonshot v1 AI**: Advanced conversational AI that understands your content
+- **Streaming Responses**: Real-time responses as you chat with your data
+- **Source Linking**: AI responses automatically reference your uploaded files
 
 ### 🔧 MCP Tool Integration
 - **Algolia MCP Server**: Primary integration for search and data storage
 - **Tool Transparency**: See which tools are being used and their results
 - **Extensible Architecture**: Connect to multiple MCP servers for additional capabilities
 
-### 🎨 Modern User Experience
-- **Dual-Panel Interface**: File analysis and chat in one seamless experience
-- **Resizable Layout**: Customize panel sizes to fit your workflow
-- **Dark Theme**: Easy on the eyes with modern design
-- **Real-time Updates**: Live streaming of AI responses and tool executions
+### 🎨 Modern Personal Interface
+- **Dual-Panel Design**: Manage your files and chat with your content side-by-side
+- **Customizable Layout**: Resize panels to match your personal workflow
+- **Modern Dark Theme**: Comfortable interface for extended use
+- **Real-time Updates**: Live streaming of AI responses as you explore your content
 
 ## 🏗️ Architecture
 
-Prism uses a sophisticated architecture that puts **Algolia MCP as the hero tool**:
+
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+┌─────────────────┐     ┌──────────────────┐    ┌─────────────────┐
 │   React Frontend │────│  Express Backend │────│  Moonshot v1 AI │
 │   (File Upload)  │    │   (API Server)   │    │ (Chat & Tools)  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+└─────────────────┘     └──────────────────┘    └─────────────────┘
                                 │
                                 ▼
                        ┌──────────────────┐
                        │   Algolia MCP    │
-                       │   (Hero Tool)    │
-                       │ • searchSingleIndex │
-                       │ • saveObject     │
                        └──────────────────┘
                                 │
                                 ▼
@@ -61,14 +57,14 @@ Prism uses a sophisticated architecture that puts **Algolia MCP as the hero tool
 
 ### How It Works
 
-1. **File Upload**: Users drag-and-drop files into the interface
-2. **AI Analysis**: Google Gemini 2.5 Pro analyzes the file content
-3. **Algolia Storage**: Analysis results are automatically saved using Algolia MCP's `saveObject` tool
-4. **User Queries**: When users ask questions, the system:
-   - Extracts key terms from the query
-   - Uses Algolia MCP's `searchSingleIndex` tool to find relevant data
-   - Provides context to Moonshot AI for enhanced responses
-5. **Contextual Responses**: AI generates responses based on both the query and retrieved data
+1. **Upload Your Files**: Drag-and-drop your personal files into the interface
+2. **AI Analysis**: Google Gemini 2.5 Pro analyzes your file content
+3. **Personal Knowledge Base**: Analysis results are automatically saved to your Algolia index using MCP
+4. **Ask Questions**: When you ask questions about your content, the system:
+   - Extracts key terms from your query
+   - Uses Algolia MCP's `searchSingleIndex` tool to find relevant content from your files
+   - Provides context to Moonshot AI for personalized responses
+5. **Contextual Answers**: AI generates responses based on your specific content and query
 
 ## 🚀 Quick Start
 
@@ -91,13 +87,12 @@ Prism uses a sophisticated architecture that puts **Algolia MCP as the hero tool
 
 2. **Environment Configuration**
    
-   **Frontend** (optional - uses backend proxy):
+   **Frontend**:
    ```bash
    cp env.example .env
-   # Edit .env if needed for custom API base URL
    ```
 
-   **Backend** (required):
+   **Backend**:
    ```bash
    cd server
    cp .env.example .env
@@ -139,8 +134,8 @@ Prism uses a sophisticated architecture that puts **Algolia MCP as the hero tool
 Prism requires the Algolia MCP server to be running. Configure the path in your `server/.env`:
 
 ```env
-MCP_NODE_PATH=/home/ubuntu/.nvm/versions/node/v22.17.1/bin/node
-MCP_SERVER_PATH=/home/ubuntu/projects/algolia-mcp-ui-app/mcp-node/src/app.ts
+   MCP_NODE_PATH=/path/to/node
+   MCP_SERVER_PATH=/path/to/algolia-mcp-server
 ```
 
 ## 🔧 Core Components
@@ -199,30 +194,32 @@ MCP_SERVER_PATH=/home/ubuntu/projects/algolia-mcp-ui-app/mcp-node/src/app.ts
 
 ### Example Queries
 
-**File-Specific Questions**:
+**Personal File Questions**:
 ```
-"What are the key points in my uploaded presentation?"
-"Summarize the data trends in my CSV file"
-"What does the contract document say about payment terms?"
+"What are the key points in my presentation?"
+"Summarize the data trends in my personal spreadsheet"
+"What did I write about project goals in my notes?"
+"Find the main themes in my uploaded research papers"
 ```
 
-**Cross-File Analysis**:
+**Cross-Content Analysis**:
 ```
-"Compare the sales data across all my uploaded reports"
-"Find mentions of 'risk' in any of my documents"
-"What insights can you draw from all my uploaded files?"
+"Compare the ideas across all my uploaded documents"
+"Find mentions of 'productivity' in any of my files"
+"What insights can you draw from all my personal content?"
+"How do my meeting notes relate to my project files?"
 ```
 
 ## 🔍 Algolia MCP Integration Details
 
-### Why Algolia MCP is the Hero Tool
+### Why Algolia MCP Powers Your Personal Knowledge
 
-Prism is designed around Algolia's powerful search capabilities:
+Prism is built around Algolia's powerful search capabilities for your personal content:
 
-1. **Universal Data Storage**: All file analyses are stored in a structured Algolia index
-2. **Fast Search**: Sub-second search across all your uploaded content
-3. **Contextual Retrieval**: AI queries automatically pull relevant data
-4. **Scalable**: Handle thousands of files with consistent performance
+1. **Personal Knowledge Storage**: All your file analyses are stored in your own structured Algolia index
+2. **Instant Search**: Sub-second search across all your personal content
+3. **Contextual Retrieval**: AI queries automatically find relevant information from your files
+4. **Grows With You**: Handle thousands of personal files with consistent performance
 
 ### Data Structure
 
@@ -237,13 +234,13 @@ Files are stored in Algolia with this structure:
 }
 ```
 
-### Search Integration
+### Personal Search Integration
 
 The system automatically:
-1. Extracts search terms from user queries
-2. Calls `searchSingleIndex` with relevant parameters
-3. Provides top results as context to the AI
-4. Generates responses that reference specific files
+1. Extracts search terms from your questions
+2. Searches your personal knowledge base using `searchSingleIndex`
+3. Provides your most relevant content as context to the AI
+4. Generates responses that reference your specific files
 
 ## 🔧 Development
 
@@ -387,14 +384,4 @@ The file analyzer supports multiple formats:
 
 MIT License - see LICENSE file for details
 
-## 🆘 Support
-
-For issues and questions:
-- Check the MCP Status Panel for connection issues
-- Review server logs for Algolia MCP errors
-- Verify environment variables are correctly set
-- Test with different file types to isolate issues
-
 ---
-
-**Prism** - Where AI meets your data, powered by Algolia's search excellence.
