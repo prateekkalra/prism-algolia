@@ -61,6 +61,50 @@ async function fetchAlgoliaContext(query) {
   }
 }
 
+// Function to save file analysis results to Algolia
+async function saveFileAnalysisToAlgolia(analysisResult) {
+  try {
+    console.log(`💾 Saving file analysis to Algolia for: "${analysisResult.fileName}"`);
+    
+    // Map file type to resource_type
+    const resourceTypeMap = {
+      'Video': 'video',
+      'Audio': 'audio', 
+      'Image': 'image',
+      'PDF': 'document',
+      'Text': 'text',
+      'Unknown': 'file'
+    };
+    
+    const resourceType = resourceTypeMap[analysisResult.fileType] || 'file';
+    
+    const algoliaRecord = {
+      resource_details: analysisResult.description,
+      resource_type: resourceType,
+      fileName: analysisResult.fileName,
+      fileSize: analysisResult.fileSize,
+      uploadDate: new Date().toISOString()
+    };
+
+    const saveResult = await mcpManager.callTool('saveObject', {
+      applicationId: 'R3W7QPM5ML',
+      indexName: 'prism-data',
+      requestBody: algoliaRecord
+    });
+
+    if (saveResult) {
+      console.log(`✅ File analysis saved to Algolia successfully`);
+      return { success: true, result: saveResult };
+    } else {
+      console.log(`⚠️ Algolia save returned no result`);
+      return { success: false, error: 'No result from Algolia' };
+    }
+  } catch (error) {
+    console.error(`❌ Failed to save file analysis to Algolia:`, error);
+    return { success: false, error: error.message };
+  }
+}
+
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -323,6 +367,45 @@ app.post('/api/chat', async (req, res) => {
     } else {
       res.end();
     }
+  }
+});
+
+// Save file analysis to Algolia
+app.post('/api/save-analysis', async (req, res) => {
+  try {
+    const { analysisResult } = req.body;
+
+    if (!analysisResult) {
+      return res.status(400).json({ error: 'analysisResult is required' });
+    }
+
+    // Validate required fields
+    if (!analysisResult.fileName || !analysisResult.fileType || !analysisResult.description) {
+      return res.status(400).json({ error: 'Missing required fields in analysisResult' });
+    }
+
+    console.log(`📤 Received save request for file: ${analysisResult.fileName}`);
+
+    const saveResult = await saveFileAnalysisToAlgolia(analysisResult);
+
+    if (saveResult.success) {
+      res.json({ 
+        success: true, 
+        message: `File analysis saved to Algolia successfully`,
+        algoliaResult: saveResult.result 
+      });
+    } else {
+      res.status(500).json({ 
+        error: 'Failed to save to Algolia', 
+        details: saveResult.error 
+      });
+    }
+  } catch (error) {
+    console.error('Error in save-analysis endpoint:', error);
+    res.status(500).json({ 
+      error: 'Failed to save file analysis',
+      details: error.message 
+    });
   }
 });
 

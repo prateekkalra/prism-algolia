@@ -50,6 +50,17 @@ export class FileAnalyzer {
       };
 
       console.log('Analysis Result:', result);
+      
+      // Automatically save to Algolia after successful analysis
+      try {
+        console.log('🔄 Auto-saving analysis to Algolia...');
+        await this.saveToAlgolia(result);
+        console.log('✅ Analysis saved to Algolia successfully');
+      } catch (error) {
+        console.error('⚠️ Failed to save analysis to Algolia:', error);
+        // Don't fail the analysis if save fails, just log the error
+      }
+      
       return result;
 
     } catch (error) {
@@ -236,6 +247,29 @@ export class FileAnalyzer {
     if (name.includes('voice') || name.includes('speech')) return 'speech';
     if (name.includes('sound') || name.includes('effect')) return 'sound effect';
     return 'audio';
+  }
+
+  private async saveToAlgolia(analysisResult: FileAnalysisResult): Promise<void> {
+    try {
+      const response = await fetch('/api/save-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ analysisResult }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Algolia save response:', result);
+    } catch (error) {
+      console.error('❌ Failed to save to Algolia:', error);
+      throw error;
+    }
   }
 }
 

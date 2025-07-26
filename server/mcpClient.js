@@ -388,6 +388,34 @@ class MCPManager {
           }
         };
       }
+      // Handle saveObject specifically
+      else if (toolName === 'saveObject') {
+        openaiTool = {
+          type: "function",
+          function: {
+            name: tool.name,
+            description: tool.description || "Save an object to Algolia index",
+            parameters: {
+              type: "object",
+              properties: {
+                applicationId: {
+                  type: "string",
+                  description: "Algolia application ID"
+                },
+                indexName: {
+                  type: "string", 
+                  description: "Name of the Algolia index to save to"
+                },
+                requestBody: {
+                  type: "object",
+                  description: "Object data to save to the index"
+                }
+              },
+              required: ["applicationId", "indexName", "requestBody"]
+            }
+          }
+        };
+      }
       
       if (openaiTool) {
         openaiTools.push(openaiTool);
