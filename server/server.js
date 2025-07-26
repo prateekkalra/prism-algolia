@@ -19,6 +19,48 @@ const client = new OpenAI({
   baseURL: 'https://api.moonshot.cn/v1',
 });
 
+// Utility function to extract and shorten user query for Algolia search
+function extractSearchQuery(userMessage) {
+  // Get the last user message content
+  const content = typeof userMessage === 'string' ? userMessage : userMessage.content;
+  
+  // Remove common conversational words and limit length
+  const cleanedQuery = content
+    .replace(/\b(can you|could you|please|help me|i want to|i need to|tell me about)\b/gi, '')
+    .replace(/[^\w\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 100); // Limit to 100 characters
+  
+  return cleanedQuery || content.substring(0, 50);
+}
+
+// Function to fetch Algolia context using the MCP searchSingleIndex tool
+async function fetchAlgoliaContext(query) {
+  try {
+    console.log(`🔍 Fetching Algolia context for query: "${query}"`);
+    
+    const searchResult = await mcpManager.callTool('searchSingleIndex', {
+      applicationId: 'R3W7QPM5ML',
+      indexName: 'prism-data',
+      requestBody: {
+        params: `query=${query}`
+      }
+    });
+
+    if (searchResult && searchResult.content) {
+      console.log(`✅ Algolia search successful, got context`);
+      return searchResult.content;
+    } else {
+      console.log(`⚠️ Algolia search returned no results`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`❌ Failed to fetch Algolia context:`, error);
+    return null;
+  }
+}
+
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -107,6 +149,33 @@ app.post('/api/chat', async (req, res) => {
       return res.status(500).json({ error: 'Moonshot API key not configured' });
     }
 
+    // Get the last user message to extract search query
+    const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
+    let contextualMessages = [...messages];
+    
+    // Fetch Algolia context if we have a user message
+    if (lastUserMessage) {
+      const searchQuery = extractSearchQuery(lastUserMessage);
+      const algoliaContext = await fetchAlgoliaContext(searchQuery);
+      
+      if (algoliaContext) {
+        // Add context as a system message before the conversation
+        const contextMessage = {
+          role: 'system',
+          content: `Here is relevant context from the knowledge base for the user's query "${searchQuery}":\n\n${JSON.stringify(algoliaContext, null, 2)}\n\nPlease use this context to provide a more informed response to the user's question.`
+        };
+        
+        // Insert context message before the last user message
+        contextualMessages = [
+          ...messages.slice(0, -1),
+          contextMessage,
+          lastUserMessage
+        ];
+        
+        console.log(`📝 Added Algolia context for query: "${searchQuery}"`);
+      }
+    }
+
     // Get available MCP tools
     const mcpTools = mcpManager.getOpenAITools();
 
@@ -121,7 +190,7 @@ app.post('/api/chat', async (req, res) => {
     // Create completion with MCP tools
     const completionOptions = {
       model: 'moonshot-v1-8k',
-      messages,
+      messages: contextualMessages,
       stream: true,
       temperature: 0.3,
     };
@@ -213,7 +282,7 @@ app.post('/api/chat', async (req, res) => {
         // If we have tool messages, make another completion call
         if (toolMessages.length > 0) {
           const followUpMessages = [
-            ...messages,
+            ...contextualMessages,
             {
               role: 'assistant',
               content: currentContent,

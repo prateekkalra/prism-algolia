@@ -343,27 +343,59 @@ class MCPManager {
     const noParamTools = ['getUserInfo', 'getApplications', 'getClustersStatus', 'getIncidents'];
     
     for (const [toolName, { tool }] of this.tools) {
-      // Only include parameter-less tools for now
-      if (!noParamTools.includes(toolName)) continue;
+      let openaiTool = null;
       
-      const openaiTool = {
-        type: "function",
-        function: {
-          name: tool.name,
-          description: tool.description || "No description available",
-          parameters: {
-            type: "object",
-            properties: {},
-            required: []
+      // Handle parameter-less tools
+      if (noParamTools.includes(toolName)) {
+        openaiTool = {
+          type: "function",
+          function: {
+            name: tool.name,
+            description: tool.description || "No description available",
+            parameters: {
+              type: "object",
+              properties: {},
+              required: []
+            }
           }
-        }
-      };
+        };
+      }
+      // Handle searchSingleIndex specifically
+      else if (toolName === 'searchSingleIndex') {
+        openaiTool = {
+          type: "function",
+          function: {
+            name: tool.name,
+            description: tool.description || "Search Algolia index for relevant data",
+            parameters: {
+              type: "object",
+              properties: {
+                applicationId: {
+                  type: "string",
+                  description: "Algolia application ID"
+                },
+                indexName: {
+                  type: "string", 
+                  description: "Name of the Algolia index to search"
+                },
+                requestBody: {
+                  type: "object",
+                  description: "Search request body with query parameters"
+                }
+              },
+              required: ["applicationId", "indexName", "requestBody"]
+            }
+          }
+        };
+      }
       
-      openaiTools.push(openaiTool);
-      console.log(`✅ Added parameter-less tool: ${tool.name}`);
+      if (openaiTool) {
+        openaiTools.push(openaiTool);
+        console.log(`✅ Added tool: ${tool.name}`);
+      }
     }
 
-    console.log(`🔧 Created ${openaiTools.length} parameter-less tools for OpenAI`);
+    console.log(`🔧 Created ${openaiTools.length} tools for OpenAI`);
     return openaiTools;
   }
 
