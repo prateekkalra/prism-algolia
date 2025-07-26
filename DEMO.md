@@ -1,10 +1,10 @@
-# File Analysis Demo - Split Panel UI
+# Prism Data Processing Demo - Split Panel UI
 
-This demonstrates the AI file analyzer with the dual-panel interface.
+This demonstrates Prism's AI-powered data processing with the dual-panel interface.
 
 ## UI Layout
 
-**Left Panel**: AI File Analyzer
+**Left Panel**: Data Processing
 - Drag & drop file upload area
 - Real-time analysis results
 - Console output logging
@@ -20,7 +20,7 @@ This demonstrates the AI file analyzer with the dual-panel interface.
 
 ### 1. Upload Process
 1. **Drag & drop** any file into the left panel upload area
-2. **AI analyzes** using Gemini API in real-time
+2. **AI processes** using advanced AI in real-time
 3. **Results appear** in both the left panel and browser console
 4. **Chat on right** remains available for further questions
 
@@ -52,7 +52,7 @@ The video shows a software interface with multiple windows and interactive eleme
 Results display in the left panel with:
 - **File info**: Name, type, size with appropriate icons
 - **Analysis summary**: Condensed description
-- **Error handling**: Graceful failure messages if analysis fails
+- **Error handling**: Graceful failure messages if processing fails
 - **Scrollable history**: Previous analyses remain visible
 
 ## File Type Examples
@@ -92,7 +92,7 @@ Results display in the left panel with:
 ### Left Panel Features
 - **Drag & drop upload**: Visual feedback during drag operations
 - **Loading states**: Spinner and progress indicators
-- **Clear results**: Trash button to clear all analysis history
+- **Clear results**: Trash button to clear all processing history
 - **Scrollable results**: View multiple file analyses
 
 ### Right Panel Features  
@@ -108,7 +108,7 @@ Results display in the left panel with:
 
 ## Try It Now
 
-1. **Setup**: Ensure your Gemini API key is in `.env`
+1. **Setup**: Ensure your AI API key is in `.env` 
 2. **Upload**: Drag any file to the left panel
 3. **Watch**: See results in both UI and console (F12)
 4. **Chat**: Use right panel for additional questions

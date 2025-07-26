@@ -94,7 +94,7 @@ export class FileAnalyzer {
   }
 
   private async analyzePDFFile(file: File): Promise<string> {
-    // For PDF files, we'll convert to base64 and let Gemini analyze
+    // For PDF files, we'll convert to base64 and let AI analyze
     const base64Data = await this.fileToBase64(file);
     const prompt = `This is a PDF file. Analyze it and describe:
     - Document type and purpose

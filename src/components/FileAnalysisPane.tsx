@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FileUploader } from './FileUploader';
 import { AnalysisResult } from './AnalysisResult';
 import { FileAnalysisResult } from '../services/fileAnalyzer';
-import { Brain, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 export const FileAnalysisPane: React.FC = () => {
   const [analysisResults, setAnalysisResults] = useState<FileAnalysisResult[]>([]);
@@ -29,10 +29,10 @@ export const FileAnalysisPane: React.FC = () => {
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Brain className="h-6 w-6 text-blue-400" />
+            <img src="/prism-logo.svg" alt="Prism" className="w-6 h-6" />
             <div>
-              <h2 className="text-lg font-semibold">AI File Analyzer</h2>
-              <p className="text-xs text-gray-400">Powered by Gemini API</p>
+              <h2 className="text-lg font-semibold">Data Processing</h2>
+              <p className="text-xs text-gray-400">Upload & Analyze</p>
             </div>
           </div>
           
@@ -76,8 +76,8 @@ export const FileAnalysisPane: React.FC = () => {
             </>
           ) : (
             <div className="text-center py-8">
-              <Brain className="h-12 w-12 mx-auto text-gray-600 mb-4" />
-              <p className="text-gray-400 text-sm mb-2">No files analyzed yet</p>
+              <img src="/prism-logo.svg" alt="Prism" className="w-12 h-12 mx-auto opacity-60 mb-4" />
+              <p className="text-gray-400 text-sm mb-2">No files processed yet</p>
               <p className="text-gray-500 text-xs">
                 Upload videos, audio, documents, images, or any file type above
               </p>

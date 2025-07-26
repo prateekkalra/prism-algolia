@@ -78,7 +78,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onAnalysisComplete }
             {isAnalyzing ? (
               <>
                 <Loader2 className="h-10 w-10 mx-auto text-blue-400 animate-spin" />
-                <p className="text-sm font-medium text-white">Analyzing {currentFile}...</p>
+                <p className="text-sm font-medium text-white">Processing {currentFile}...</p>
                 <p className="text-xs text-gray-400">This may take a moment</p>
               </>
             ) : (
@@ -101,7 +101,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onAnalysisComplete }
           <div className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
             <span className="text-xs text-blue-300">
-              Processing with Gemini AI...
+              Processing with AI...
             </span>
           </div>
         </div>

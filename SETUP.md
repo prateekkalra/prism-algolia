@@ -1,6 +1,6 @@
-# AI File Analyzer Setup
+# Prism Setup
 
-This application uses Google's Gemini API to analyze uploaded files of any type (video, audio, text, PDF, images, etc.).
+This application uses AI to analyze uploaded files of any type (video, audio, text, PDF, images, etc.).
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ This application uses Google's Gemini API to analyze uploaded files of any type 
 
 ## Setup Instructions
 
-### 1. Get your Gemini API Key
+### 1. Get your AI API Key
 
 1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
 2. Sign in with your Google account
@@ -59,8 +59,8 @@ npm run dev
 ## Features
 
 - **Multi-format support**: Handles video, audio, text, PDF, images, and more
-- **AI-powered analysis**: Uses Google's Gemini AI for intelligent content analysis
-- **Dual-panel interface**: File analysis on left, chat on right
+- **AI-powered analysis**: Uses advanced AI for intelligent content analysis
+- **Dual-panel interface**: Data processing on left, chat on right
 - **Resizable layout**: Drag divider to adjust panel sizes
 - **Console output**: Detailed results printed to browser console
 - **Drag & drop interface**: Easy file upload with visual feedback
@@ -75,6 +75,6 @@ npm run dev
 
 ## API Limits
 
-- Gemini API has rate limits and file size limits
-- Check [Google's documentation](https://ai.google.dev/) for current limits
+- AI service has rate limits and file size limits
+- Check the service documentation for current limits
 - The app handles errors gracefully and will show fallback descriptions if API calls fail 
