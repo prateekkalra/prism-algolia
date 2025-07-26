@@ -166,7 +166,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Prism anything about your data... (Shift+Enter for new line)"
+              placeholder="Ask Prism anything about your data..."
               className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 resize-none outline-none min-h-[20px] max-h-[120px] py-2 px-2 font-mono text-sm leading-relaxed"
               rows={1}
             />

@@ -19,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <img src="/prism-logo.svg" alt="Prism" className="w-8 h-8" />
           <div>
             <h1 className="text-xl font-bold text-white">Prism</h1>
-            <p className="text-xs text-gray-400">AI-Powered Data Analysis Platform</p>
+            <p className="text-xs text-gray-400">AI-Powered Knowledge Companion</p>
           </div>
         </div>
 
