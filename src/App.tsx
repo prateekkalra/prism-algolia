@@ -130,7 +130,7 @@ function App() {
         msg.id === aiMessageId 
           ? { 
               ...msg, 
-              content: 'Sorry, I encountered an error while processing your request. Please make sure you have set up your Moonshot API key in the environment variables.',
+              content: 'Sorry, I encountered an error while processing your request. Please check your connection and try again.',
               isStreaming: false,
               isComplete: true
             }

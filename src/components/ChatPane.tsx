@@ -109,7 +109,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({
           <img src="/prism-logo.svg" alt="Prism" className="w-8 h-8" />
           <div>
             <h1 className="text-xl font-bold text-white">Prism</h1>
-            <p className="text-xs text-gray-400">Powered by Moonshot AI + MCP</p>
+            <p className="text-xs text-gray-400">AI-Powered Data Analysis Platform</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -152,8 +152,8 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
                 <MessageSquare className="w-8 h-8 text-blue-400" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Chat with Moonshot AI + MCP</h2>
-              <p className="text-gray-400 text-lg">Ask questions, use tools, or request analysis of your data</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Prism AI Assistant</h2>
+              <p className="text-gray-400 text-lg">Ask questions, analyze data, and explore insights with advanced AI tools</p>
             </div>
 
             <div className="grid gap-3 w-full max-w-lg">
@@ -214,7 +214,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Message Moonshot AI with MCP tools... (Shift+Enter for new line)"
+              placeholder="Ask Prism anything about your data... (Shift+Enter for new line)"
               className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 resize-none outline-none min-h-[20px] max-h-[120px] py-2 px-2 font-mono text-sm leading-relaxed"
               rows={1}
             />

@@ -2,6 +2,7 @@
   "name": "prism",
   "private": true,
   "version": "0.0.0",
+  "description": "Intelligent data analysis platform combining AI-powered chat with advanced file processing and MCP tool integration",
   "type": "module",
   "scripts": {
     "dev": "vite",

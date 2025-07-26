@@ -1,7 +1,7 @@
 {
   "name": "prism-server",
   "version": "1.0.0",
-  "description": "Backend server for Prism to handle Moonshot API calls",
+  "description": "Backend server for Prism - AI-powered data analysis platform with MCP integration",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

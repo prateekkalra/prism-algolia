@@ -57,8 +57,8 @@ export const FileAnalysisPane: React.FC = () => {
           <div className="flex items-center gap-3">
             <img src="/prism-logo.svg" alt="Prism" className="w-6 h-6" />
             <div>
-              <h2 className="text-lg font-semibold">Data Processing</h2>
-              <p className="text-xs text-gray-400">Upload & Analyze</p>
+              <h2 className="text-lg font-semibold">Smart Analytics</h2>
+              <p className="text-xs text-gray-400">Intelligent File Insights</p>
             </div>
           </div>
           
@@ -86,10 +86,10 @@ export const FileAnalysisPane: React.FC = () => {
             <>
               <div className="mb-4">
                 <h3 className="text-sm font-medium text-gray-300 mb-2">
-                  Analysis History ({storedAnalyses.length})
+                  Insights Library ({storedAnalyses.length})
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Click to view detailed analysis
+                  Click any item to explore detailed insights
                 </p>
               </div>
               <div className="space-y-3">
@@ -106,9 +106,9 @@ export const FileAnalysisPane: React.FC = () => {
           ) : (
             <div className="text-center py-8">
               <img src="/prism-logo.svg" alt="Prism" className="w-12 h-12 mx-auto opacity-60 mb-4" />
-              <p className="text-gray-400 text-sm mb-2">No files processed yet</p>
+              <p className="text-gray-400 text-sm mb-2">Ready to unlock insights</p>
               <p className="text-gray-500 text-xs">
-                Upload videos, audio, documents, images, or any file type above
+                Drop any file above to discover patterns, extract data, and generate intelligent summaries
               </p>
             </div>
           )}
