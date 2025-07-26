@@ -21,3 +21,13 @@ export interface ExamplePrompt {
   text: string;
   icon: string;
 }
+
+export interface StoredAnalysis {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: string;
+  description: string;
+  error?: string;
+  analysisDate: Date;
+}

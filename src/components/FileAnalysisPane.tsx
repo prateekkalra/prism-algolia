@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileUploader } from './FileUploader';
-import { AnalysisResult } from './AnalysisResult';
+import { AnalysisSummary } from './AnalysisSummary';
+import { AnalysisDetailDialog } from './AnalysisDetailDialog';
 import { FileAnalysisResult } from '../services/fileAnalyzer';
+import { StoredAnalysis } from '../types/types';
+import { LocalStorageService } from '../services/localStorage';
 import { Trash2 } from 'lucide-react';
 
 export const FileAnalysisPane: React.FC = () => {
-  const [analysisResults, setAnalysisResults] = useState<FileAnalysisResult[]>([]);
+  const [storedAnalyses, setStoredAnalyses] = useState<StoredAnalysis[]>([]);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<StoredAnalysis | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    loadStoredAnalyses();
+  }, []);
+
+  const loadStoredAnalyses = () => {
+    const analyses = LocalStorageService.getAllAnalyses();
+    setStoredAnalyses(analyses);
+  };
 
   const handleAnalysisComplete = (result: FileAnalysisResult) => {
     console.log('\n=== FILE ANALYSIS COMPLETE ===');
@@ -15,11 +29,23 @@ export const FileAnalysisPane: React.FC = () => {
     console.log(`Description:\n${result.description}`);
     console.log('===============================\n');
     
-    setAnalysisResults(prev => [result, ...prev]);
+    const storedAnalysis = LocalStorageService.saveAnalysis(result);
+    setStoredAnalyses(prev => [storedAnalysis, ...prev]);
+  };
+
+  const handleViewDetails = (analysis: StoredAnalysis) => {
+    setSelectedAnalysis(analysis);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteAnalysis = (id: string) => {
+    LocalStorageService.deleteAnalysis(id);
+    setStoredAnalyses(prev => prev.filter(analysis => analysis.id !== id));
   };
 
   const clearResults = () => {
-    setAnalysisResults([]);
+    LocalStorageService.clearAllAnalyses();
+    setStoredAnalyses([]);
     console.clear();
   };
 
@@ -36,7 +62,7 @@ export const FileAnalysisPane: React.FC = () => {
             </div>
           </div>
           
-          {analysisResults.length > 0 && (
+          {storedAnalyses.length > 0 && (
             <button
               onClick={clearResults}
               className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
@@ -56,21 +82,24 @@ export const FileAnalysisPane: React.FC = () => {
       {/* Results Section */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
-          {analysisResults.length > 0 ? (
+          {storedAnalyses.length > 0 ? (
             <>
               <div className="mb-4">
                 <h3 className="text-sm font-medium text-gray-300 mb-2">
-                  Analysis Results ({analysisResults.length})
+                  Analysis History ({storedAnalyses.length})
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Check browser console for detailed output
+                  Click to view detailed analysis
                 </p>
               </div>
-              <div className="space-y-4">
-                {analysisResults.map((result, index) => (
-                  <div key={`${result.fileName}-${index}`} className="bg-gray-800/50 rounded-lg">
-                    <AnalysisResult result={result} />
-                  </div>
+              <div className="space-y-3">
+                {storedAnalyses.map((analysis) => (
+                  <AnalysisSummary
+                    key={analysis.id}
+                    analysis={analysis}
+                    onViewDetails={handleViewDetails}
+                    onDelete={handleDeleteAnalysis}
+                  />
                 ))}
               </div>
             </>
@@ -85,6 +114,13 @@ export const FileAnalysisPane: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Analysis Detail Dialog */}
+      <AnalysisDetailDialog
+        analysis={selectedAnalysis}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
     </div>
   );
 }; 
