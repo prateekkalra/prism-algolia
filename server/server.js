@@ -44,7 +44,7 @@ async function fetchAlgoliaContext(query) {
       applicationId: 'R3W7QPM5ML',
       indexName: 'prism-data',
       requestBody: {
-        params: `query=${query}`
+        params: `hitsPerPage=1&query=${query}`
       }
     });
 
@@ -134,13 +134,7 @@ async function initializeMCPServers() {
         TERM: 'xterm-256color'
       }
     },
-    // Temporarily disabled to focus on user's MCP server
-    // {
-    //   id: 'dummy-tools',
-    //   command: 'node',
-    //   args: [path.join(__dirname, 'dummy-mcp-server.js')]
-    // },
-    // Add more MCP servers here as needed
+   
   ];
 
   for (const server of mcpServers) {
