@@ -17,12 +17,12 @@ const PORT = process.env.PORT || 3001;
 function validateEnvironment() {
   const requiredVars = [
     'MOONSHOT_API_KEY',
-    'ALGOLIA_APPLICATION_ID', 
+    'ALGOLIA_APPLICATION_ID',
     'ALGOLIA_INDEX_NAME'
   ];
-  
+
   const missingVars = requiredVars.filter(varName => !process.env[varName]);
-  
+
   if (missingVars.length > 0) {
     console.error('❌ Missing required environment variables:');
     missingVars.forEach(varName => {
@@ -31,7 +31,7 @@ function validateEnvironment() {
     console.error('Please check your .env file and ensure all required variables are set.');
     process.exit(1);
   }
-  
+
   console.log('✅ Environment variables validated successfully');
 }
 
@@ -45,7 +45,7 @@ const client = new OpenAI({
 function extractSearchQuery(userMessage) {
   // Get the last user message content
   const content = typeof userMessage === 'string' ? userMessage : userMessage.content;
-  
+
   // Remove common conversational words and limit length
   const cleanedQuery = content
     .replace(/\b(can you|could you|please|help me|i want to|i need to|tell me about)\b/gi, '')
@@ -53,7 +53,7 @@ function extractSearchQuery(userMessage) {
     .replace(/\s+/g, ' ')
     .trim()
     .substring(0, 100); // Limit to 100 characters
-  
+
   return cleanedQuery || content.substring(0, 50);
 }
 
@@ -61,7 +61,7 @@ function extractSearchQuery(userMessage) {
 async function fetchAlgoliaContext(query) {
   try {
     console.log(`🔍 Fetching Algolia context for query: "${query}"`);
-    
+
     const searchResult = await mcpManager.callTool('searchSingleIndex', {
       applicationId: process.env.ALGOLIA_APPLICATION_ID || 'R3W7QPM5ML',
       indexName: process.env.ALGOLIA_INDEX_NAME || 'prism-data',
@@ -87,19 +87,19 @@ async function fetchAlgoliaContext(query) {
 async function saveFileAnalysisToAlgolia(analysisResult) {
   try {
     console.log(`💾 Saving file analysis to Algolia for: "${analysisResult.fileName}"`);
-    
+
     // Map file type to resource_type
     const resourceTypeMap = {
       'Video': 'video',
-      'Audio': 'audio', 
+      'Audio': 'audio',
       'Image': 'image',
       'PDF': 'document',
       'Text': 'text',
       'Unknown': 'file'
     };
-    
+
     const resourceType = resourceTypeMap[analysisResult.fileType] || 'file';
-    
+
     const algoliaRecord = {
       resource_details: analysisResult.description,
       resource_type: resourceType,
@@ -137,7 +137,7 @@ app.use(express.json());
 // Initialize MCP servers on startup
 async function initializeMCPServers() {
   console.log('🚀 Initializing MCP servers...');
-  
+
   // Example: Connect to a local MCP server
   // You can configure these in environment variables
   const mcpServers = [
@@ -146,7 +146,7 @@ async function initializeMCPServers() {
       command: process.env.MCP_NODE_PATH || '/home/ubuntu/.nvm/versions/node/v22.17.1/bin/node',
       args: [
         '--experimental-strip-types',
-        '--no-warnings=ExperimentalWarning', 
+        '--no-warnings=ExperimentalWarning',
         process.env.MCP_SERVER_PATH || '/home/ubuntu/projects/algolia-mcp-ui-app/mcp-node/src/app.ts'
       ],
       env: {
@@ -156,7 +156,7 @@ async function initializeMCPServers() {
         TERM: 'xterm-256color'
       }
     },
-   
+
   ];
 
   for (const server of mcpServers) {
@@ -174,8 +174,8 @@ async function initializeMCPServers() {
 // Health check endpoint
 app.get('/health', (req, res) => {
   const mcpServers = mcpManager.getServersInfo();
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     apiKeyConfigured: !!process.env.MOONSHOT_API_KEY,
     mcpServers
@@ -186,7 +186,7 @@ app.get('/health', (req, res) => {
 app.get('/api/mcp/info', (req, res) => {
   const servers = mcpManager.getServersInfo();
   const tools = mcpManager.getOpenAITools();
-  
+
   res.json({
     servers,
     tools: tools.map(t => ({
@@ -212,26 +212,40 @@ app.post('/api/chat', async (req, res) => {
     // Get the last user message to extract search query
     const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
     let contextualMessages = [...messages];
-    
+    let sourceFileInfo = null;
+
     // Fetch Algolia context if we have a user message
     if (lastUserMessage) {
       const searchQuery = extractSearchQuery(lastUserMessage);
       const algoliaContext = await fetchAlgoliaContext(searchQuery);
-      
+
       if (algoliaContext) {
+        // Extract source file information from the first hit
+        if (JSON.parse(algoliaContext?.[0]?.text)?.hits?.length > 0) {
+          const firstHit = JSON.parse(algoliaContext?.[0]?.text)?.hits[0];
+          sourceFileInfo = {
+            fileName: firstHit.fileName,
+            fileType: firstHit.resource_type,
+            fileSize: firstHit.fileSize,
+            description: firstHit.resource_details,
+            objectId: firstHit.objectID,
+            uploadDate: firstHit.uploadDate
+          };
+        }
+
         // Add context as a system message before the conversation
         const contextMessage = {
           role: 'system',
           content: `Here is relevant context from the knowledge base for the user's query "${searchQuery}":\n\n${JSON.stringify(algoliaContext, null, 2)}\n\nPlease use this context to provide a more informed response to the user's question.`
         };
-        
+
         // Insert context message before the last user message
         contextualMessages = [
           ...messages.slice(0, -1),
           contextMessage,
           lastUserMessage
         ];
-        
+
         console.log(`📝 Added Algolia context for query: "${searchQuery}"`);
       }
     }
@@ -244,6 +258,13 @@ app.post('/api/chat', async (req, res) => {
     res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+
+    // Add source file information headers if available
+    if (sourceFileInfo) {
+      res.setHeader('X-Source-Available', 'true');
+      res.setHeader('X-Source-Data', JSON.stringify(sourceFileInfo));
+      console.log(`📎 Added source headers for: ${sourceFileInfo.fileName}`);
+    }
 
     console.log(`💬 Chat request with ${mcpTools.length} MCP tools available`);
 
@@ -310,13 +331,13 @@ app.post('/api/chat', async (req, res) => {
         for (const toolCall of currentToolCalls) {
           try {
             console.log(`🔧 Executing tool: ${toolCall.function.name}`);
-            
+
             // Parse arguments
             const args = JSON.parse(toolCall.function.arguments);
-            
+
             // Execute via MCP
             const result = await mcpManager.callTool(toolCall.function.name, args);
-            
+
             // Add tool result to messages
             toolMessages.push({
               role: 'tool',
@@ -374,11 +395,11 @@ app.post('/api/chat', async (req, res) => {
     res.end();
   } catch (error) {
     console.error('Error in chat endpoint:', error);
-    
+
     if (!res.headersSent) {
-      res.status(500).json({ 
+      res.status(500).json({
         error: 'Failed to get response from AI',
-        details: error.message 
+        details: error.message
       });
     } else {
       res.end();
@@ -405,22 +426,22 @@ app.post('/api/save-analysis', async (req, res) => {
     const saveResult = await saveFileAnalysisToAlgolia(analysisResult);
 
     if (saveResult.success) {
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: `File analysis saved to Algolia successfully`,
-        algoliaResult: saveResult.result 
+        algoliaResult: saveResult.result
       });
     } else {
-      res.status(500).json({ 
-        error: 'Failed to save to Algolia', 
-        details: saveResult.error 
+      res.status(500).json({
+        error: 'Failed to save to Algolia',
+        details: saveResult.error
       });
     }
   } catch (error) {
     console.error('Error in save-analysis endpoint:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to save file analysis',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -428,7 +449,7 @@ app.post('/api/save-analysis', async (req, res) => {
 // Connect to a new MCP server
 app.post('/api/mcp/connect', async (req, res) => {
   const { serverId, command, args, token, ...serverConfig } = req.body;
-  
+
   if (!serverId || !command) {
     return res.status(400).json({ error: 'serverId and command are required' });
   }
@@ -448,7 +469,7 @@ app.post('/api/mcp/connect', async (req, res) => {
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../dist')));
-  
+
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
@@ -470,17 +491,17 @@ process.on('SIGINT', async () => {
 // Start server
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  
+
   // Validate environment variables first
   validateEnvironment();
-  
+
   console.log(`🔑 API Key configured: ${!!process.env.MOONSHOT_API_KEY}`);
   console.log(`🌐 CORS origin: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
   console.log(`🔗 Moonshot Base URL: ${process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1'}`);
   console.log(`🤖 Moonshot Model: ${process.env.MOONSHOT_MODEL || 'moonshot-v1-8k'}`);
   console.log(`🔍 Algolia App ID: ${process.env.ALGOLIA_APPLICATION_ID}`);
   console.log(`📊 Algolia Index: ${process.env.ALGOLIA_INDEX_NAME}`);
-  
+
   // Initialize MCP servers
   await initializeMCPServers();
 }); 

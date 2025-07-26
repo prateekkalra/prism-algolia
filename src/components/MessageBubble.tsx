@@ -33,15 +33,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, sourceAnalysis, 
       <div className={`max-w-[80%] ${isUser ? 'order-first' : ''}`}>
         {/* Source Reference - only show for AI messages with source */}
         {!isUser && sourceAnalysis && onViewSourceDetails && (
-          <>
-            {console.log('🎯 Rendering MessageSourceReference for:', sourceAnalysis.fileName)}
-            <MessageSourceReference
-              analysis={sourceAnalysis}
-              onClick={() => onViewSourceDetails(sourceAnalysis)}
-            />
-          </>
+          <MessageSourceReference
+            analysis={sourceAnalysis}
+            onClick={() => onViewSourceDetails(sourceAnalysis)}
+          />
         )}
-        {!isUser && !sourceAnalysis && console.log('❌ No source analysis for AI message')}
         <div
           className={`rounded-2xl px-4 py-3 ${
             isUser

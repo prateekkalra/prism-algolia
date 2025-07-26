@@ -4,7 +4,7 @@ import { ChatMessage } from './types/types';
 import { FileAnalysisPane } from './components/FileAnalysisPane';
 import ChatPane from './components/ChatPane';
 import Navbar from './components/Navbar';
-import { sendMessageToMoonshot, convertChatMessagesToMoonshotFormat } from './services/moonshot';
+import { sendMessageToMoonshot, convertChatMessagesToMoonshotFormat, MoonshotResponse } from './services/moonshot';
 import { LocalStorageService } from './services/localStorage';
 
 function App() {
@@ -85,7 +85,7 @@ function App() {
       const moonshotMessages = convertChatMessagesToMoonshotFormat(conversationHistory);
 
       // Send to Moonshot with streaming
-      const fullResponse = await sendMessageToMoonshot(
+      const response: MoonshotResponse = await sendMessageToMoonshot(
         moonshotMessages,
         (chunk: string) => {
           // Update the streaming message with new chunk
@@ -97,8 +97,32 @@ function App() {
         }
       );
 
-      // Detect if response should be linked to a source record
-      let sourceRecordId = detectSourceReference(content, fullResponse);
+      // Handle source information from Algolia
+      let sourceRecordId = undefined;
+      if (response.sourceInfo) {
+        // Create StoredAnalysis record from Algolia data
+        const algoliaAnalysis = {
+          id: `algolia_${response.sourceInfo.objectId}`,
+          fileName: response.sourceInfo.fileName,
+          fileType: response.sourceInfo.fileType === 'document' ? 'PDF' : 
+                   response.sourceInfo.fileType === 'text' ? 'Text' :
+                   response.sourceInfo.fileType === 'image' ? 'Image' :
+                   response.sourceInfo.fileType === 'video' ? 'Video' :
+                   response.sourceInfo.fileType === 'audio' ? 'Audio' : 'Unknown',
+          fileSize: response.sourceInfo.fileSize,
+          description: response.sourceInfo.description,
+          analysisDate: new Date(response.sourceInfo.uploadDate)
+        };
+        
+        // Save to localStorage for reference display
+        LocalStorageService.saveStoredAnalysis(algoliaAnalysis);
+        sourceRecordId = algoliaAnalysis.id;
+        
+        console.log('📎 Created source record from Algolia:', sourceRecordId, '- File:', algoliaAnalysis.fileName);
+      } else {
+        // Fallback to existing detection method
+        sourceRecordId = detectSourceReference(content, response.content);
+      }
       
 
       // Mark message as complete and add source reference if detected

@@ -25,8 +25,6 @@ const getFileIcon = (fileType: string) => {
 };
 
 const MessageSourceReference: React.FC<MessageSourceReferenceProps> = ({ analysis, onClick }) => {
-  console.log('🔗 MessageSourceReference rendering:', analysis.fileName);
-  
   return (
     <div className="mb-2">
       <button

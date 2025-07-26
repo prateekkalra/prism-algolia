@@ -1,17 +1,17 @@
 import { FileAnalysisResult } from './fileAnalyzer';
-
-export interface StoredAnalysis extends FileAnalysisResult {
-  id: string;
-  analysisDate: Date;
-}
+import { StoredAnalysis } from '../types/types';
 
 export class LocalStorageService {
   private static readonly STORAGE_KEY = 'prism-file-analyses';
 
   static saveAnalysis(analysis: FileAnalysisResult): StoredAnalysis {
     const storedAnalysis: StoredAnalysis = {
-      ...analysis,
       id: this.generateId(),
+      fileName: analysis.fileName,
+      fileType: analysis.fileType,
+      fileSize: analysis.fileSize,
+      description: analysis.description,
+      error: analysis.error,
       analysisDate: new Date()
     };
 
@@ -22,13 +22,31 @@ export class LocalStorageService {
     return storedAnalysis;
   }
 
+  static saveStoredAnalysis(analysis: StoredAnalysis): StoredAnalysis {
+    const existing = this.getAllAnalyses();
+    
+    // Check if analysis with this ID already exists
+    const existingIndex = existing.findIndex(item => item.id === analysis.id);
+    
+    if (existingIndex >= 0) {
+      // Update existing analysis
+      existing[existingIndex] = analysis;
+    } else {
+      // Add new analysis
+      existing.unshift(analysis);
+    }
+    
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(existing));
+    return analysis;
+  }
+
   static getAllAnalyses(): StoredAnalysis[] {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (!stored) return [];
       
       const parsed = JSON.parse(stored);
-      return parsed.map((item: any) => ({
+      return parsed.map((item: StoredAnalysis) => ({
         ...item,
         analysisDate: new Date(item.analysisDate)
       }));

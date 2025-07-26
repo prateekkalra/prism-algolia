@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Square, MessageSquare, BarChart3, FileSearch, TrendingUp } from 'lucide-react';
 import { ChatMessage, ExamplePrompt, StoredAnalysis } from '../types/types';
 import MessageBubble from './MessageBubble';
-import MCPStatusPanel from './MCPStatusPanel';
 import { AnalysisDetailDialog } from './AnalysisDetailDialog';
 import { LocalStorageService } from '../services/localStorage';
 
@@ -130,18 +129,9 @@ const ChatPane: React.FC<ChatPaneProps> = ({
             {messages.map((message) => {
               // Get source analysis if message has a source record ID
               const sourceAnalysis = message.sourceRecordId 
-                ? LocalStorageService.getAnalysisById(message.sourceRecordId)
+                ? LocalStorageService.getAnalysisById(message.sourceRecordId) || undefined
                 : undefined;
               
-              // Debug logging for each message
-              console.log('📨 Message Debug:', {
-                id: message.id,
-                type: message.type,
-                hasSourceId: !!message.sourceRecordId,
-                sourceId: message.sourceRecordId,
-                foundAnalysis: !!sourceAnalysis,
-                analysisFile: sourceAnalysis?.fileName
-              });
               
               return (
                 <MessageBubble 
