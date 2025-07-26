@@ -13,10 +13,32 @@ if (!globalThis.fetch) {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Validate required environment variables
+function validateEnvironment() {
+  const requiredVars = [
+    'MOONSHOT_API_KEY',
+    'ALGOLIA_APPLICATION_ID', 
+    'ALGOLIA_INDEX_NAME'
+  ];
+  
+  const missingVars = requiredVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.error('❌ Missing required environment variables:');
+    missingVars.forEach(varName => {
+      console.error(`   - ${varName}`);
+    });
+    console.error('Please check your .env file and ensure all required variables are set.');
+    process.exit(1);
+  }
+  
+  console.log('✅ Environment variables validated successfully');
+}
+
 // Initialize OpenAI client for Moonshot
 const client = new OpenAI({
   apiKey: process.env.MOONSHOT_API_KEY,
-  baseURL: 'https://api.moonshot.cn/v1',
+  baseURL: process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1',
 });
 
 // Utility function to extract and shorten user query for Algolia search
@@ -41,8 +63,8 @@ async function fetchAlgoliaContext(query) {
     console.log(`🔍 Fetching Algolia context for query: "${query}"`);
     
     const searchResult = await mcpManager.callTool('searchSingleIndex', {
-      applicationId: 'R3W7QPM5ML',
-      indexName: 'prism-data',
+      applicationId: process.env.ALGOLIA_APPLICATION_ID || 'R3W7QPM5ML',
+      indexName: process.env.ALGOLIA_INDEX_NAME || 'prism-data',
       requestBody: {
         params: `hitsPerPage=1&query=${query}`
       }
@@ -87,8 +109,8 @@ async function saveFileAnalysisToAlgolia(analysisResult) {
     };
 
     const saveResult = await mcpManager.callTool('saveObject', {
-      applicationId: 'R3W7QPM5ML',
-      indexName: 'prism-data',
+      applicationId: process.env.ALGOLIA_APPLICATION_ID || 'R3W7QPM5ML',
+      indexName: process.env.ALGOLIA_INDEX_NAME || 'prism-data',
       requestBody: algoliaRecord
     });
 
@@ -121,11 +143,11 @@ async function initializeMCPServers() {
   const mcpServers = [
     {
       id: 'algolia-mcp-server',
-      command: '/home/ubuntu/.nvm/versions/node/v22.17.1/bin/node',
+      command: process.env.MCP_NODE_PATH || '/home/ubuntu/.nvm/versions/node/v22.17.1/bin/node',
       args: [
         '--experimental-strip-types',
         '--no-warnings=ExperimentalWarning', 
-        '/home/ubuntu/projects/algolia-mcp-ui-app/mcp-node/src/app.ts'
+        process.env.MCP_SERVER_PATH || '/home/ubuntu/projects/algolia-mcp-ui-app/mcp-node/src/app.ts'
       ],
       env: {
         HOME: '/home/ubuntu',
@@ -227,7 +249,7 @@ app.post('/api/chat', async (req, res) => {
 
     // Create completion with MCP tools
     const completionOptions = {
-      model: 'moonshot-v1-8k',
+      model: process.env.MOONSHOT_MODEL || 'moonshot-v1-8k',
       messages: contextualMessages,
       stream: true,
       temperature: 0.3,
@@ -332,7 +354,7 @@ app.post('/api/chat', async (req, res) => {
           // Make follow-up call without streaming to get final response
           try {
             const followUpResponse = await client.chat.completions.create({
-              model: 'moonshot-v1-8k',
+              model: process.env.MOONSHOT_MODEL || 'moonshot-v1-8k',
               messages: followUpMessages,
               temperature: 0.3,
             });
@@ -448,8 +470,16 @@ process.on('SIGINT', async () => {
 // Start server
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  
+  // Validate environment variables first
+  validateEnvironment();
+  
   console.log(`🔑 API Key configured: ${!!process.env.MOONSHOT_API_KEY}`);
   console.log(`🌐 CORS origin: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+  console.log(`🔗 Moonshot Base URL: ${process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1'}`);
+  console.log(`🤖 Moonshot Model: ${process.env.MOONSHOT_MODEL || 'moonshot-v1-8k'}`);
+  console.log(`🔍 Algolia App ID: ${process.env.ALGOLIA_APPLICATION_ID}`);
+  console.log(`📊 Algolia Index: ${process.env.ALGOLIA_INDEX_NAME}`);
   
   // Initialize MCP servers
   await initializeMCPServers();

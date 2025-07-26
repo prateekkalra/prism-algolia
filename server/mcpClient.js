@@ -19,8 +19,8 @@ class MCPManager {
       
       // Create client first
       const client = new Client({
-        name: "prism-mcp-client",
-        version: "1.0.0"
+        name: process.env.MCP_CLIENT_NAME || "prism-mcp-client",
+        version: process.env.MCP_CLIENT_VERSION || "1.0.0"
       }, {
         capabilities: {
           tools: {}
@@ -62,8 +62,8 @@ class MCPManager {
       console.log(`🔌 Connecting to HTTP MCP server: ${serverId} at ${url}`);
       
       const client = new Client({
-        name: "prism-mcp-client",
-        version: "1.0.0"
+        name: process.env.MCP_CLIENT_NAME || "prism-mcp-client",
+        version: process.env.MCP_CLIENT_VERSION || "1.0.0"
       }, {
         capabilities: {
           tools: {}
