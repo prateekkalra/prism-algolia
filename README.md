@@ -4,6 +4,7 @@
 
 Prism is an intelligent personal knowledge platform that revolutionizes how you organize, search, and interact with your content. Upload any type of file (documents, images, videos, audio) and chat with your data using AI. Our system analyzes your files with Google's Gemini 2.5 Pro and automatically creates a searchable personal knowledge base using **Algolia MCP (Model Context Protocol)** integration, enabling natural language conversations about your content.
 
+![Prism Interface](public/videoframe_75611.png)
 
 ## 🌟 Key Features
 
