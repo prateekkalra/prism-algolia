@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/animations.css';
+
 /* Custom Scrollbars */
 .scrollbar-custom {
   scrollbar-width: thin;
