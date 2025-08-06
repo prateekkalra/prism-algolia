@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Square, MessageSquare, BarChart3, FileSearch, TrendingUp } from 'lucide-react';
+import { Send, Square, MessageSquare, BarChart3, FileSearch, TrendingUp, Eye } from 'lucide-react';
 import { ChatMessage, ExamplePrompt, StoredAnalysis } from '../types/types';
 import MessageBubble from './MessageBubble';
+import EntriWelcomeScreen from './EntriWelcomeScreen';
 import { AnalysisDetailDialog } from './AnalysisDetailDialog';
 import { LocalStorageService } from '../services/localStorage';
 
@@ -9,12 +10,14 @@ interface ChatPaneProps {
   messages: ChatMessage[];
   onSendMessage: (message: string) => void;
   isLoading: boolean;
+  showEntriMode?: boolean;
 }
 
 const ChatPane: React.FC<ChatPaneProps> = ({
   messages,
   onSendMessage,
-  isLoading
+  isLoading,
+  showEntriMode = true
 }) => {
   const [input, setInput] = useState('');
   const [selectedAnalysis, setSelectedAnalysis] = useState<StoredAnalysis | null>(null);
@@ -22,7 +25,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const examplePrompts: ExamplePrompt[] = [
+  const generalExamples: ExamplePrompt[] = [
     {
       id: '1',
       text: 'What tools do you have available?',
@@ -37,6 +40,30 @@ const ChatPane: React.FC<ChatPaneProps> = ({
       id: '3',
       text: 'What time is it right now?',
       icon: 'TrendingUp'
+    }
+  ];
+
+  const entriExamples: ExamplePrompt[] = [
+    {
+      id: '1',
+      text: 'Analyze customer acquisition trends from our latest campaign data',
+      icon: 'TrendingUp',
+      domain: 'entri',
+      category: 'Analytics'
+    },
+    {
+      id: '2',
+      text: 'Compare conversion rates across different marketing channels',
+      icon: 'BarChart3',
+      domain: 'entri',
+      category: 'Performance'
+    },
+    {
+      id: '3',
+      text: 'Generate insights from uploaded business reports',
+      icon: 'FileSearch',
+      domain: 'entri',
+      category: 'Insights'
     }
   ];
 
@@ -98,32 +125,41 @@ const ChatPane: React.FC<ChatPaneProps> = ({
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 scrollbar-custom">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center max-w-2xl mx-auto">
-            <div className="mb-8">
-              <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                <MessageSquare className="w-8 h-8 text-blue-400" />
+          showEntriMode ? (
+            <EntriWelcomeScreen onExampleClick={handleExamplePrompt} />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center max-w-2xl mx-auto">
+              <div className="mb-8">
+                <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                  <MessageSquare className="w-8 h-8 text-blue-400" />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">DataChat AI</h2>
+                <p className="text-gray-400 text-lg">Ask questions, analyze data, and explore insights with advanced AI tools</p>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Prism AI Assistant</h2>
-              <p className="text-gray-400 text-lg">Ask questions, analyze data, and explore insights with advanced AI tools</p>
-            </div>
 
-            <div className="grid gap-3 w-full max-w-lg">
-              {examplePrompts.map((prompt) => (
-                <button
-                  key={prompt.id}
-                  onClick={() => handleExamplePrompt(prompt.text)}
-                  className="flex items-center gap-3 p-4 bg-gray-800/50 hover:bg-gray-800/70 rounded-xl text-left transition-all duration-200 hover:scale-[1.02] group"
-                >
-                  <div className="text-blue-400 group-hover:text-blue-300 transition-colors">
-                    {getExampleIcon(prompt.icon)}
-                  </div>
-                  <span className="text-gray-300 group-hover:text-white transition-colors">
-                    {prompt.text}
-                  </span>
-                </button>
-              ))}
+              <div className="grid gap-3 w-full max-w-lg">
+                {(showEntriMode ? entriExamples : generalExamples).map((prompt) => (
+                  <button
+                    key={prompt.id}
+                    onClick={() => handleExamplePrompt(prompt.text)}
+                    className="flex items-center gap-3 p-4 bg-gray-800/50 hover:bg-gray-800/70 rounded-xl text-left transition-all duration-200 hover:scale-[1.02] group"
+                  >
+                    <div className="text-blue-400 group-hover:text-blue-300 transition-colors">
+                      {getExampleIcon(prompt.icon)}
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-gray-300 group-hover:text-white transition-colors">
+                        {prompt.text}
+                      </span>
+                      {prompt.category && (
+                        <div className="text-xs text-gray-500 mt-1">{prompt.category}</div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )
         ) : (
           <div className="max-w-4xl mx-auto">
             {messages.map((message) => {
@@ -156,7 +192,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Prism anything about your data..."
+              placeholder={showEntriMode ? "Ask about your business data and get insights..." : "Ask DataChat AI anything about your data..."}
               className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 resize-none outline-none min-h-[20px] max-h-[120px] py-2 px-2 font-mono text-sm leading-relaxed"
               rows={1}
             />
